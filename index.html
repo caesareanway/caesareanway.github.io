@@ -30,7 +30,11 @@
             max-width: 100%;
             max-height: 80vh; /* Adjust to ensure footer visibility */
             height: auto;
+            animation: logoFade 5s infinite; /* Runs the animation over 5s, infinitely */
         }
+        @keyframes logoFade {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.1; } /* Adjust the opacity mid-way to create a shadow effect */
         a {
             color: white; /* Ensures links are also white */
         }
