@@ -4,12 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CAESAREAN</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet"> <!-- Google Font link for Roboto -->
     <style>
         html, body {
             height: 100%;
             margin: 0;
             background-color: black; /* Sets the background color to black */
             color: white; /* Sets the text color to white */
+            font-family: 'Roboto', sans-serif; /* Sets the global font to Roboto */
         }
         body {
             display: flex;
@@ -17,7 +19,7 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            padding-bottom: 50px; /* Adjust based on footer height */
+            padding-bottom: 20px; /* Adjust based on footer height */
         }
         footer {
             position: absolute;
@@ -25,6 +27,9 @@
             width: 100%;
             text-align: center;
             padding: 20px;
+            color: white; /* Ensures footer text is white */
+            font-size: 18px; /* Sets the font size */
+            font-weight: 300; /* Lighter font weight for less bold appearance */
         }
         img {
             max-width: 100%;
@@ -33,8 +38,9 @@
             animation: logoFade 10s infinite; /* Runs the animation over 5s, infinitely */
         }
         @keyframes logoFade {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.1; } /* Adjust the opacity mid-way to create a shadow effect */
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.1; } /* Adjust the opacity mid-way to create a shadow effect */
+        }
         a {
             color: white; /* Ensures links are also white */
         }
@@ -42,5 +48,9 @@
 </head>
 <body>
     <img src="caesarean logo wb.png" alt="Caesarean Logo">
+    <!-- Footer added below the image -->
+    <footer>
+        Under Construction...
+    </footer>
 </body>
 </html>
