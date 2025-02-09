@@ -1,0 +1,201 @@
+/* Reset and global styles */
+body, html {
+    margin: 0;
+    padding: 0;
+    font-family: 'Roboto', sans-serif;
+    background-color: black;
+    color: white;
+    text-align: center;
+}
+
+/* Ensure images display properly */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Index Page */
+.index-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+.logo {
+    width: 450px;
+    cursor: pointer;
+}
+
+/* Navigation styles */
+nav {
+    margin-bottom: 40px;
+}
+
+nav a {
+    color: white;
+    text-decoration: underline;
+    margin: 15px;
+    font-size: 18px;
+}
+
+nav a:hover {
+    text-decoration: none;
+}
+
+/* Section styling */
+section {
+    margin-top: 30px; /* Reduce from 100px to 50px */
+    padding: 10px;
+}
+
+/* Music Content */
+.music-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 800px;
+    margin: auto;
+}
+
+.music-text {
+    text-align: center;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.video-container {
+    width: 100%;
+    max-width: 800px;
+}
+
+/* Links Container */
+.links-container {
+    max-width: 300px;
+    text-align: center;
+    margin-top: 25px;
+}
+
+.links-container p {
+    margin: 12px 0;
+    line-height: 1.6;
+}
+
+.links-container a {
+    display: block;
+    color: white !important;
+    text-decoration: underline;
+    margin: 4px 0;
+    font-weight: normal;
+}
+
+.links-container a:hover {
+    text-decoration: none;
+}
+
+/* Header Styling for ALL PAGES */
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+header img {
+    width: 450px;
+    cursor: pointer;
+}
+
+/* Previous & Upcoming Shows */
+.shows-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 10px;
+}
+
+.show {
+    display: flex;
+    align-items: center;
+    max-width: 900px;
+    gap: 20px;
+    padding: 15px;
+    background-color: #0a0a0a;
+    border-radius: 8px;
+}
+
+.show img {
+    width: 200px;
+    height: auto;
+    border-radius: 5px;
+}
+
+.show-info {
+    text-align: left;
+    color: white;
+}
+
+.show-info h3 {
+    margin: 5px 0;
+    font-size: 20px;
+}
+
+.show-info p {
+    margin: 0;
+    font-size: 16px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .show {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .show img {
+        width: 100%;
+        max-width: 300px;
+    }
+
+    .show-info {
+        text-align: center;
+    }
+}
+
+/* Bio Section */
+#bio {
+    margin-top: 50px;
+    text-align: center;
+}
+
+#bio h1 {
+    font-size: 28px;
+    margin-bottom: 15px;
+}
+
+#bio h2 {
+    margin-top: 10px; /* Reduce space above the title */
+    font-size: 24px;
+}
+
+.band-photo {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.band-photo img {
+    width: 80%;
+    max-width: 900px;
+    border-radius: 5px;
+}
+
+/* Style email link */
+#bio a {
+    color: white !important;
+    text-decoration: underline;
+}
+
+#bio a:hover {
+    text-decoration: none;
+}
