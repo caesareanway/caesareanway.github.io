@@ -135,6 +135,15 @@ header img {
     color: white;
 }
 
+.show-info a {
+    color: white;
+    text-decoration: underline;
+}
+
+.show-info a:hover {
+    text-decoration: none;
+}
+
 .show-info h3 {
     margin: 5px 0;
     font-size: 20px;
@@ -199,3 +208,4 @@ header img {
 #bio a:hover {
     text-decoration: none;
 }
+
