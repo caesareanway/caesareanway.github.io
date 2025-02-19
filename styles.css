@@ -209,3 +209,47 @@ header img {
     text-decoration: none;
 }
 
+.bio-photo-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 800px;
+    margin: auto;
+}
+
+.bio-photo {
+    max-width: 100%;
+    height: auto;
+    width: 700px;
+    margin-top: 20px;
+    border-radius: 0px; /* Removes rounded corners */
+}
+
+/* Photo Credit */
+.photo-credit {
+    font-size: 14px;
+    color: white;
+    text-align: right;
+    width: 100%;
+    margin-top: 5px;
+}
+
+.photo-credit a {
+    color: white;
+    text-decoration: underline;
+}
+
+.photo-credit a:hover {
+    text-decoration: none;
+}
+
+/* Email Link */
+.email-link {
+    color: white;
+    text-decoration: underline;
+}
+
+.email-link:hover {
+    text-decoration: none;
+}
