@@ -19,14 +19,11 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            padding-bottom: 20px; /* Adjust based on footer height */
+            padding-bottom: 10px; /* Adjust based on footer height */
         }
         footer {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
             text-align: center;
-            padding: 20px;
+            padding: 10px;
             color: rgba(184, 176, 176, 0.651); 
             font-size: 18px; /* Sets the font size */
             font-weight: 300; /* Lighter font weight for less bold appearance */
@@ -36,11 +33,9 @@
             max-height: 80vh;
             height: auto;
             cursor: pointer; /* Makes the logo clickable */
-            animation: logoFade 10s infinite; /* Runs the animation over 5s, infinitely */
         }
-        @keyframes logoFade {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.1; } /* Adjust the opacity mid-way to create a shadow effect */
+        a img {
+            margin-bottom: 8px; /* Reduces space between image and footer */
         }
         a {
             color: white; /* White color for text */
@@ -54,10 +49,21 @@
         a:hover {
             text-decoration: none; /* Remove underline on hover for effect */
         }
+        .promo-image {
+        transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        @media (hover: hover) {
+        .promo-image:hover {
+            opacity: 0.92;
+            transform: scale(1.01);
+        }
+        }
     </style>
 </head>
 <body>
-    <a href="main.html"><img src="caesarean logo wb.png" alt="Caesarean Logo"></a>
+    <a href="main.html">
+        <img src="Advert_01c-revised-(1).png" alt="Promo Graphic" class="promo-image">
+    </a>
     <footer>
         <a href="main.html">Click to Enter</a>
     </footer>
