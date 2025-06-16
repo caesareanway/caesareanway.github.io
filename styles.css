@@ -46,7 +46,7 @@ nav a:hover {
 
 /* Section styling */
 section {
-    margin-top: 30px; /* Reduce from 100px to 50px */
+    margin-top: 30px;
     padding: 10px;
 }
 
@@ -116,7 +116,7 @@ header img {
 
 .show {
     display: flex;
-    align-items: center;
+    align-items: flex-start; /* change from center to flex-start */
     max-width: 900px;
     gap: 20px;
     padding: 15px;
@@ -125,9 +125,15 @@ header img {
 }
 
 .show img {
-    width: 200px;
-    height: auto;
+    display: block;
+    width: 200px !important;
+    height: 250px !important;
+    object-fit: contain !important;
+    background-color: black;
+    border: 1px solid #222;
     border-radius: 0px;
+    padding: 4px;
+    box-sizing: border-box;
 }
 
 .show-info {
@@ -162,8 +168,10 @@ header img {
     }
 
     .show img {
-        width: 100%;
-        max-width: 300px;
+        width: 200px !important;
+        height: 250px !important;
+        object-fit: contain !important;
+        margin: 0 auto;
     }
 
     .show-info {
@@ -183,7 +191,7 @@ header img {
 }
 
 #bio h2 {
-    margin-top: 10px; /* Reduce space above the title */
+    margin-top: 10px;
     font-size: 24px;
 }
 
@@ -223,7 +231,7 @@ header img {
     height: auto;
     width: 700px;
     margin-top: 20px;
-    border-radius: 0px; /* Removes rounded corners */
+    border-radius: 0px;
 }
 
 /* Photo Credit */
@@ -282,5 +290,3 @@ header img {
 .photo-grid .tall {
     grid-row: span 2;
 }
-
-
