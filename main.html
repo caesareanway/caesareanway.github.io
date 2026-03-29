@@ -10,6 +10,25 @@
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon_32.png">
+<style>
+      .music-link {
+        display: flex;
+        align-items: center;
+      }
+      .stream-icon {
+        width: 14px;
+        height: 14px;
+        flex: 0 0 14px;
+        opacity: 0.8;
+        margin-right: 1ch;
+      }
+      .music-link:hover .stream-icon {
+        opacity: 1;
+      }
+    .music-link::before {
+    display: none;
+    }
+    </style>
     <!-- Privacy-friendly analytics by Plausible -->
     <script async src="https://plausible.io/js/pa-NxrS-ZBB3CydIa5kbqjEk.js"></script>
     <script>
@@ -18,6 +37,17 @@
     </script>
 </head>
 <body>
+<svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
+      <symbol id="icon-spotify" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M12 0C5.372 0 0 5.372 0 12s5.372 12 12 12 12-5.372 12-12S18.628 0 12 0Zm5.503 17.305a.748.748 0 0 1-1.029.248c-2.82-1.723-6.37-2.113-10.552-1.158a.75.75 0 0 1-.334-1.462c4.579-1.046 8.512-.6 11.669 1.33a.75.75 0 0 1 .246 1.042Zm1.469-3.267a.938.938 0 0 1-1.288.31c-3.228-1.984-8.148-2.56-11.966-1.399a.937.937 0 1 1-.546-1.793c4.36-1.323 10.282-.682 13.493 1.497a.937.937 0 0 1 .307 1.385Zm.126-3.4C15.226 8.337 8.84 8.126 5.193 9.233a1.125 1.125 0 1 1-.653-2.153c4.188-1.27 11.152-1.024 15.704 1.68a1.125 1.125 0 1 1-1.146 1.878Z"/>
+      </symbol>
+      <symbol id="icon-youtube-music" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M12 1.5A10.5 10.5 0 1 0 22.5 12 10.512 10.512 0 0 0 12 1.5Zm0 19.5A9 9 0 1 1 21 12a9.01 9.01 0 0 1-9 9Zm0-14.25A5.25 5.25 0 1 0 17.25 12 5.256 5.256 0 0 0 12 6.75Zm-1.5 8.25v-6l5.25 3Z"/>
+      </symbol>
+      <symbol id="icon-apple-music" viewBox="0 0 24 24">
+        <path fill="currentColor" d="M17.928 3.084c-2.073.4-6.198 1.55-8.98 2.397a1.5 1.5 0 0 0-1.063 1.434v8.11a2.875 2.875 0 1 0 1.5 2.52V9.833l7.5-1.944v5.636a2.875 2.875 0 1 0 1.5 2.52V4.556a1.5 1.5 0 0 0-1.457-1.472Z"/>
+      </symbol>
+    </svg>
     <div class="page">
         <aside class="sidebar">
             <a href="main.html" class="sidebar-logo">
@@ -52,9 +82,9 @@
 
                     <div class="link-group">
                         <p class="link-group-label">Streaming</p>
-                        <a href="https://open.spotify.com/artist/1Hj0CVZLl2A9P32hvbsgwE" target="_blank">Spotify</a>
-                        <a href="https://music.youtube.com/channel/UC9z125QOcApu1g_4puTTS8w" target="_blank">YouTube Music</a>
-                        <a href="https://music.apple.com/us/artist/caesarean/1770907590" target="_blank">Apple Music</a>
+                        <a href="https://open.spotify.com/artist/1Hj0CVZLl2A9P32hvbsgwE" target="_blank" class="music-link"><svg class="stream-icon" aria-hidden="true"><use href="#icon-spotify"></use></svg><span>Spotify</span></a>
+                        <a href="https://music.youtube.com/channel/UC9z125QOcApu1g_4puTTS8w" target="_blank" class="music-link"><svg class="stream-icon" aria-hidden="true"><use href="#icon-youtube-music"></use></svg><span>YouTube Music</span></a>
+                        <a href="https://music.apple.com/us/artist/caesarean/1770907590" target="_blank" class="music-link"><svg class="stream-icon" aria-hidden="true"><use href="#icon-apple-music"></use></svg><span>Apple Music</span></a>
                     </div>
 
                     <div class="link-group">
