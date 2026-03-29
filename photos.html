@@ -3,33 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Photos - CAESAREAN</title>
+    <meta name="description" content="CAESAREAN — Live photos.">
+    <title>CAESAREAN — Photos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <!-- Privacy-friendly analytics by Plausible -->
+    <script async src="https://plausible.io/js/pa-NxrS-ZBB3CydIa5kbqjEk.js"></script>
+    <script>
+      window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+      plausible.init()
+    </script>
 </head>
 <body>
-    <header>
-        <a href="main.html"><img src="caesarean logo wb.png" alt="Caesarean Logo" class="logo"></a>
-    </header>    
+    <div class="page">
+        <aside class="sidebar">
+            <a href="main.html" class="sidebar-logo">
+                <img src="logo.png" alt="Caesarean">
+            </a>
+            <nav class="sidebar-nav">
+                <a href="main.html">Music</a>
+                <a href="upcoming.html">Upcoming</a>
+                <a href="previous.html">Previous</a>
+                <a href="photos.html" class="active">Photos</a>
+<a href="press.html">Press</a>
+                <a href="bio.html">Bio</a>
+            </nav>
+            <div class="sidebar-links">
+                <a href="https://www.instagram.com/caesarean215/" target="_blank">Instagram</a>
+                <a href="https://hpgd.bandcamp.com/album/wretched-decrepitude" target="_blank">Bandcamp</a>
+</div>
+            <p class="sidebar-copy">&copy; Caesarean &mdash; Philadelphia, PA</p>
+        </aside>
 
-    <nav>
-        <a href="main.html">Music</a>
-        <a href="upcoming.html">Upcoming Shows</a>
-        <a href="previous.html">Previous Shows</a>
-        <a href="photos.html">Live Photos</a>
-        <a href="bio.html">Bio / Contact</a>
-    </nav>
+        <main class="content photos-content">
+            <p class="page-label">Live Photos</p>
 
-    <section>
-        <h2>Live Photos</h2>
-        <div class="photo-grid">
-            <a href="bonks1.png" target="_blank"><img src="bonks1.png" class="tall"></a>
-            <a href="foto1.png" target="_blank"><img src="foto1.png"></a>
-            <a href="foto2.png" target="_blank"><img src="foto2.png"></a>
-            <a href="foto3.png" target="_blank"><img src="foto3.png"></a>
-            <a href="foto5.png" target="_blank"><img src="foto5.png"></a>
-            <a href="foto6.png" target="_blank"><img src="foto6.png"></a>
-            <a href="milkboy1.png" target="_blank"><img src="milkboy1.png" class="tall"></a>            
-        </div>
-    </section>
+            <div class="photo-grid">
+                <a href="#" data-src="IMG_9877.jpeg" class="tall lightbox-trigger"><img src="IMG_9877.jpeg" alt="Live photo"></a>
+                <a href="#" data-src="kerrymcgu362575-r1-028.JPG" class="lightbox-trigger"><img src="kerrymcgu362575-r1-028.JPG" alt="Live photo"></a>
+                <a href="#" data-src="kerrymcgu362575-r1-027.JPG" class="lightbox-trigger"><img src="kerrymcgu362575-r1-027.JPG" alt="Live photo"></a>
+                <a href="#" data-src="IMG_2653.jpeg" class="tall lightbox-trigger"><img src="IMG_2653.jpeg" alt="Live photo"></a>
+                <a href="#" data-src="img015.jpeg" class="lightbox-trigger"><img src="img015.jpeg" alt="Live photo"></a>
+                <a href="#" data-src="img024.jpeg" class="lightbox-trigger"><img src="img024.jpeg" alt="Live photo"></a>
+                <a href="#" data-src="img025.jpeg" class="lightbox-trigger"><img src="img025.jpeg" alt="Live photo"></a>
+                <a href="#" data-src="bonks1.png" class="tall lightbox-trigger"><img src="bonks1.png" alt="Live photo"></a>
+                <a href="#" data-src="foto1.png" class="lightbox-trigger"><img src="foto1.png" alt="Live photo"></a>
+                <a href="#" data-src="foto2.png" class="lightbox-trigger"><img src="foto2.png" alt="Live photo"></a>
+                <a href="#" data-src="foto3.png" class="lightbox-trigger"><img src="foto3.png" alt="Live photo"></a>
+                <a href="#" data-src="foto5.png" class="lightbox-trigger"><img src="foto5.png" alt="Live photo"></a>
+                <a href="#" data-src="foto6.png" class="lightbox-trigger"><img src="foto6.png" alt="Live photo"></a>
+                <a href="#" data-src="milkboy1.png" class="tall lightbox-trigger"><img src="milkboy1.png" alt="Live photo"></a>
+            </div>
+        </main>
+    </div>
+
+    <!-- Lightbox -->
+    <div class="lightbox-overlay" id="lightbox">
+        <span class="lightbox-close" id="lightbox-close">Close</span>
+        <img src="" alt="" id="lightbox-img">
+    </div>
+
+    <script>
+        const overlay = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const closeBtn = document.getElementById('lightbox-close');
+
+        document.querySelectorAll('.lightbox-trigger').forEach(function(el) {
+            el.addEventListener('click', function(e) {
+                e.preventDefault();
+                lightboxImg.src = this.dataset.src;
+                overlay.classList.add('active');
+            });
+        });
+
+        function closeLightbox() {
+            overlay.classList.remove('active');
+            lightboxImg.src = '';
+        }
+
+        closeBtn.addEventListener('click', closeLightbox);
+        overlay.addEventListener('click', function(e) { if (e.target === overlay) closeLightbox(); });
+        document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeLightbox(); });
+    </script>
 </body>
 </html>

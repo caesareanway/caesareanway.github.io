@@ -3,63 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CAESAREAN - Official Site</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet"> <!-- Google Font link for Roboto -->
-    <style>
-        html, body {
-            height: 100%;
-            margin: 0;
-            background-color: black; /* Sets the background color to black */
-            color: rgba(80, 75, 75, 0.651); /* Sets the text color to white */
-            font-family: 'Roboto', sans-serif; /* Sets the global font to Roboto */
-        }
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding-bottom: 20px; /* Adjust based on footer height */
-        }
-        footer {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            text-align: center;
-            padding: 20px;
-            color: rgba(184, 176, 176, 0.651); 
-            font-size: 18px; /* Sets the font size */
-            font-weight: 300; /* Lighter font weight for less bold appearance */
-        }
-        img {
-            max-width: 100%;
-            max-height: 80vh;
-            height: auto;
-            cursor: pointer; /* Makes the logo clickable */
-            animation: logoFade 10s infinite; /* Runs the animation over 5s, infinitely */
-        }
-        @keyframes logoFade {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.1; } /* Adjust the opacity mid-way to create a shadow effect */
-        }
-        a {
-            color: white; /* White color for text */
-            text-decoration: underline; /* Underline for a clean, simple look */
-            font-size: 24px; /* Larger font size for visibility */
-            padding: 12px 24px; /* Padding for a better touch area */
-            background-color: transparent; /* Transparent background */
-            border: none; /* No border */
-            cursor: pointer; /* Cursor as pointer to indicate clickable */
-        }
-        a:hover {
-            text-decoration: none; /* Remove underline on hover for effect */
-        }
-    </style>
+    <meta name="description" content="CAESAREAN — Philadelphia death metal.">
+    <title>CAESAREAN</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <!-- Privacy-friendly analytics by Plausible -->
+    <script async src="https://plausible.io/js/pa-NxrS-ZBB3CydIa5kbqjEk.js"></script>
+    <script>
+      window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+      plausible.init()
+    </script>
 </head>
-<body>
-    <a href="main.html"><img src="caesarean logo wb.png" alt="Caesarean Logo"></a>
-    <footer>
-        <a href="main.html">Click to Enter</a>
-    </footer>
+<body class="splash-body">
+    <a href="main.html" class="splash-logo">
+        <img src="logo.png" alt="Caesarean">
+    </a>
+    <p class="splash-sub splash-statement">PHILADELPHIA<br>IMPERIAL<br>METAL<br>DEVASTATION</p>
+    <a href="main.html" class="splash-enter">Enter<span class="cursor">_</span></a>
 </body>
 </html>
