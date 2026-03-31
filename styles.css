@@ -1108,46 +1108,52 @@ body.splash::before {
    ============================================================ */
 
 @media (max-width: 900px) {
-  :root { --nav-h: 56px; }
+  :root { --nav-h: 48px; }
 
-  /* Nav */
-  .nav-toggle {
-    display: flex;
-  }
+  /* Nav — scrollable strip, no hamburger */
+  .nav-toggle { display: none; }
 
-  .nav-links {
-    display: none;
-    position: fixed;
-    top: var(--nav-h);
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: var(--bg);
-    flex-direction: column;
-    align-items: flex-start;
+  .nav {
     justify-content: flex-start;
-    padding: 40px var(--gutter);
-    gap: 0;
-    border-top: 1px solid var(--border);
-    overflow-y: auto;
+    padding: 0;
   }
 
+  .nav-links,
   .nav-links.open {
     display: flex;
+    position: static;
+    background: none;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    padding: 0 20px;
+    gap: 24px;
+    border-top: none;
+    overflow-x: auto;
+    overflow-y: visible;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    height: 100%;
+    width: 100%;
+    inset: auto;
   }
+
+  .nav-links::-webkit-scrollbar { display: none; }
 
   .nav-links a {
-    font-size: 15px;
-    letter-spacing: 0.06em;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
     color: var(--fg-dim);
-    padding: 18px 0;
-    border-bottom: 1px solid var(--border);
-    width: 100%;
+    padding: 0;
+    border: none;
+    width: auto;
+    white-space: nowrap;
+    flex-shrink: 0;
   }
 
-  .nav-links a:first-child {
-    border-top: 1px solid var(--border);
-  }
+  .nav-links a:first-child { border-top: none; }
 
   .nav-links .nav-ig {
     border-left: none;
