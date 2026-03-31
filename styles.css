@@ -294,7 +294,7 @@ body.splash::before {
 }
 
 .bio-text a {
-  text-decoration: underline;
+  text-decoration: underline !important;
 }
 
 /* Ensure page content sits above backgrounds */
