@@ -293,6 +293,10 @@ body.splash::before {
   opacity: 0.045;
 }
 
+.bio-text a {
+  text-decoration: underline;
+}
+
 /* Ensure page content sits above backgrounds */
 .splash-wrapper,
 .music-page .container,
