@@ -435,6 +435,10 @@ body.splash::before {
   color: var(--fg);
 }
 
+.album-note {
+  margin: 0;
+}
+
 /* Spotify embed */
 .spotify-wrap {
   margin-top: 48px;
