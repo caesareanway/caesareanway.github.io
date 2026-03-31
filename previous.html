@@ -1,254 +1,401 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="CAESAREAN — Previous shows.">
-    <title>CAESAREAN — Previous Shows</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
-<link rel="icon" href="favicon.ico?v=2">
-<link rel="icon" type="image/ico" sizes="32x32" href="favicon.ico?v=2">
-<link rel="shortcut icon" href="favicon.ico?v=2">
-    
-    <!-- Privacy-friendly analytics by Plausible -->
-    <script async src="https://plausible.io/js/pa-NxrS-ZBB3CydIa5kbqjEk.js"></script>
-    <script>
-      window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
-      plausible.init()
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CAESAREAN — Previous shows.">
+  <title>CAESAREAN — Previous Shows</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="favicon.ico?v=2">
+  <link rel="apple-touch-icon" href="logo.png">
+  <script data-goatcounter="https://caesarean.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  <style>
+    /* ── Year accordion ── */
+    .year-section { border-top: 1px solid var(--border); }
+    .year-section:last-child { border-bottom: 1px solid var(--border); }
+
+    .year-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 28px 0;
+      cursor: pointer;
+      background: none;
+      border: none;
+      text-align: left;
+      color: var(--fg);
+      gap: 16px;
+    }
+
+    .year-toggle:hover .year-label { color: var(--fg); }
+
+    .year-label {
+      font-family: var(--display);
+      font-size: clamp(3rem, 5vw, 5rem);
+      line-height: 1;
+      color: var(--fg-dim);
+      transition: color 0.2s;
+    }
+
+    .year-section.open .year-label { color: var(--fg); }
+
+    .year-count {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--fg-dim);
+      flex-shrink: 0;
+    }
+
+    .year-chevron {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      stroke: var(--fg-dim);
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: transform 0.3s ease;
+    }
+
+    .year-section.open .year-chevron { transform: rotate(180deg); }
+
+    .year-body {
+      display: none;
+      padding-bottom: 8px;
+    }
+
+    .year-section.open .year-body { display: block; }
+
+    /* Show items inside accordion — no top border (year-toggle has it) */
+    .year-body .show-item:first-child { border-top: none; padding-top: 0; }
+  </style>
 </head>
 <body>
-    <div class="page">
-        <aside class="sidebar">
-            <a href="main.html" class="sidebar-logo">
-                <img src="logo.png" alt="Caesarean">
-            </a>
-            <nav class="sidebar-nav">
-                <a href="main.html">Music</a>
-                <a href="upcoming.html">Upcoming</a>
-                <a href="previous.html" class="active">Previous</a>
-                <a href="photos.html">Photos</a>
-<a href="press.html">Press</a>
-                <a href="bio.html">Bio</a>
-            </nav>
-            <div class="sidebar-links">
-                <a href="https://www.instagram.com/caesarean215/" target="_blank">Instagram</a>
-                <a href="https://hpgd.bandcamp.com/album/wretched-decrepitude" target="_blank">Bandcamp</a>
-</div>
-            <p class="sidebar-copy">&copy; Caesarean &mdash; Philadelphia, PA</p>
-        </aside>
 
-        <main class="content">
-            <p class="page-label">Previous Shows</p>
+<header class="nav" id="nav">
+  <nav class="nav-links" id="nav-links">
+    <a href="main.html">Music</a>
+    <a href="upcoming.html">Upcoming</a>
+    <a href="previous.html" class="active">Previous</a>
+    <a href="photos.html">Photos</a>
+    <a href="bio.html">Bio</a>
+    <a href="https://www.instagram.com/caesarean215/" target="_blank" rel="noopener noreferrer" class="nav-ig">Instagram ↗</a>
+  </nav>
+  <button class="nav-toggle" id="nav-toggle" aria-label="Open menu">
+    <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+</header>
 
-            <div class="show-entry">
-                <a href="Tombs 1080x1350.jpg" target="_blank" class="show-flyer">
-                    <img src="Tombs 1080x1350.jpg" alt="March 25, 2026 Flyer">
-                </a>
-                <div class="show-meta">
-                    <p class="show-date">2026.03.25</p>
-                    <p class="show-venue">Milkboy</p>
-                    <p class="show-location">Philadelphia, PA</p>
-                    <p class="show-bands">w/
-                        <a href="https://www.metal-archives.com/bands/Tombs/3540372249" target="_blank">Tombs</a>,
-                        <a href="https://www.metal-archives.com/bands/Replicant/3540411923" target="_blank">Replicant</a>
-                    </p>
-                </div>
+<div class="shows-page">
+  <div class="container">
+
+    <h1 class="page-heading">Previous Shows</h1>
+
+    <!-- ── 2026 ── -->
+    <div class="year-section open" id="year-2026">
+      <button class="year-toggle" aria-expanded="true" aria-controls="body-2026" onclick="toggleYear('year-2026')">
+        <span class="year-label">2026</span>
+        <span class="year-count">1 show</span>
+        <svg class="year-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="year-body" id="body-2026">
+
+        <div class="show-item">
+          <div class="show-date-col">
+            <div class="show-date">Mar 25</div>
+            <div class="show-day">Wednesday</div>
+          </div>
+          <div class="show-details">
+            <div class="show-venue">Milkboy</div>
+            <div class="show-info">
+              Philadelphia, PA<br>
+              w/ <a href="https://www.metal-archives.com/bands/Tombs/3540372249" target="_blank" rel="noopener noreferrer"><strong>Tombs</strong></a>,
+              <a href="https://www.metal-archives.com/bands/Replicant/3540411923" target="_blank" rel="noopener noreferrer">Replicant</a>
             </div>
-
-            <div class="show-entry">
-                <a href="ANALSW2025WBORDER.jpg" target="_blank" class="show-flyer">
-                    <img src="ANALSW2025WBORDER.jpg" alt="December 28, 2025 Flyer">
-                </a>
-                <div class="show-meta">
-                    <p class="show-date">2025.12.28</p>
-                    <p class="show-venue">Nikki Lopez</p>
-                    <p class="show-location">Philadelphia, PA</p>
-                    <p class="show-bands">w/
-                        <a href="https://www.metal-archives.com/bands/Anal_Stabwound/3540481288" target="_blank">Anal Stabwound</a>,
-                        <a href="https://www.metal-archives.com/bands/Compulsed/3540543423" target="_blank">Compulsed</a>,
-                        <a href="https://www.metal-archives.com/bands/Disarticulate/3540574239" target="_blank">Disarticulate</a>
-                    </p>
-                </div>
+            <div class="show-flyer">
+              <img src="Tombs 1080x1350.jpg" alt="March 25, 2026 show flyer" loading="lazy">
             </div>
+          </div>
+        </div>
 
-            <div class="show-entry">
-                <a href="20251205_KONTUSION_ALT_PRINT.jpg" target="_blank" class="show-flyer">
-                    <img src="20251205_KONTUSION_ALT_PRINT.jpg" alt="December 5, 2025 Flyer">
-                </a>
-                <div class="show-meta">
-                    <p class="show-date">2025.12.05</p>
-                    <p class="show-venue">The Snake Pit</p>
-                    <p class="show-location">Philadelphia, PA</p>
-                    <p class="show-bands">w/
-                        <a href="https://www.metal-archives.com/bands/Kontusion/3540503538" target="_blank">Kontusion</a>,
-                        <a href="https://www.instagram.com/sevlezu/" target="_blank">Sev Lezu</a>,
-                        <a href="https://www.metal-archives.com/bands/Spesimin/3540467968" target="_blank">Spesimin</a>
-                    </p>
-                </div>
-            </div>
-
-            <div class="show-entry">
-                <a href="CEASAREANRELEASE9 (1).jpg" target="_blank" class="show-flyer">
-                    <img src="CEASAREANRELEASE9 (1).jpg" alt="September 13, 2025 Flyer">
-                </a>
-                <div class="show-meta">
-                    <p class="show-date">2025.09.13</p>
-                    <p class="show-venue">The Snake Pit</p>
-                    <p class="show-location">Philadelphia, PA</p>
-                    <p class="show-bands">w/
-                        <a href="https://www.metal-archives.com/bands/Coffin_Dust/3540314669" target="_blank">Coffin Dust</a>,
-                        <a href="https://strangemono.com/concrete-caveman/" target="_blank">Concrete Caveman</a>,
-                        <a href="https://hateofman.bandcamp.com/album/2025-promo" target="_blank">Hate of Man</a>
-                    </p>
-                </div>
-            </div>
-
-            <div class="show-entry">
-                <a href="BBIV.png" target="_blank" class="show-flyer">
-                    <img src="BBIV.png" alt="August 15, 2025 Flyer">
-                </a>
-                <div class="show-meta">
-                    <p class="show-date">2025.08.15</p>
-                    <p class="show-venue">Mr. Beery's</p>
-                    <p class="show-location">Philadelphia, PA</p>
-                </div>
-            </div>
-
-            <div class="show-entry">
-                <a href="NEEDLEPORKFINAL2.jpg" target="_blank" class="show-flyer">
-                    <img src="NEEDLEPORKFINAL2.jpg" alt="August 13, 2025 Flyer">
-                </a>
-                <div class="show-meta">
-                    <p class="show-date">2025.08.13</p>
-                    <p class="show-venue">The Snake Pit</p>
-                    <p class="show-location">Philadelphia, PA</p>
-                    <p class="show-bands">w/
-                        <a href="https://www.metal-archives.com/bands/%E6%B3%A8%E5%B0%84%E9%87%9D%E6%B7%B7%E5%85%A5%E8%B1%9A/3540386394" target="_blank">Needle Contaminated Pork</a>,
-                        <a href="https://www.metal-archives.com/bands/Charcuterie/" target="_blank">Charcuterie</a>
-                    </p>
-                </div>
-            </div>
-
-            <div class="show-entry">
-                <a href="N LOPEZ.jpg" target="_blank" class="show-flyer">
-                    <img src="N LOPEZ.jpg" alt="July 22, 2025 Flyer">
-                </a>
-                <div class="show-meta">
-                    <p class="show-date">2025.07.22</p>
-                    <p class="show-venue">Nikki Lopez</p>
-                    <p class="show-location">Philadelphia, PA</p>
-                    <p class="show-bands">w/
-                        <a href="https://cavemoth.bandcamp.com/" target="_blank">Cave Moth</a>,
-                        <a href="https://www.metal-archives.com/bands/Conglaciation/" target="_blank">Conglaciation</a>,
-                        <a href="https://www.metal-archives.com/bands/Charcuterie/" target="_blank">Charcuterie</a>
-                    </p>
-                </div>
-            </div>
-
-            <div class="show-entry">
-                <a href="imagejpeg_0.jpg" target="_blank" class="show-flyer">
-                    <img src="imagejpeg_0.jpg" alt="January 24, 2025 Flyer">
-                </a>
-                <div class="show-meta">
-                    <p class="show-date">2025.01.24</p>
-                    <p class="show-venue">Milkboy</p>
-                    <p class="show-location">Philadelphia, PA</p>
-                    <p class="show-bands">w/
-                        <a href="https://www.metal-archives.com/bands/Vile_Form/3540550983" target="_blank">Vile Form</a>,
-                        <a href="https://thinshred.bandcamp.com/album/dusk" target="_blank">Thin</a>,
-                        <a href="https://familygarden121.bandcamp.com/" target="_blank">Family Garden</a>
-                    </p>
-                </div>
-            </div>
-
-            <div class="show-entry">
-                <a href="WBG_RELEASE_SHOWFINAL2.jpg" target="_blank" class="show-flyer">
-                    <img src="WBG_RELEASE_SHOWFINAL2.jpg" alt="November 16, 2024 Flyer">
-                </a>
-                <div class="show-meta">
-                    <p class="show-date">2024.11.16</p>
-                    <p class="show-venue">The Sanctuary</p>
-                    <p class="show-location">Philadelphia, PA</p>
-                    <p class="show-bands">w/
-                        <a href="https://strangemono.com/concrete-caveman/" target="_blank">Concrete Caveman</a>,
-                        <a href="https://www.metal-archives.com/bands/Moisturizer/3540442666" target="_blank">Moisturizer</a>,
-                        <a href="https://vileenemy.bandcamp.com/" target="_blank">Vile Enemy</a>
-                    </p>
-                </div>
-            </div>
-
-            <div class="show-entry">
-                <a href="09.27.24 death sculpted copy.jpg" target="_blank" class="show-flyer">
-                    <img src="09.27.24 death sculpted copy.jpg" alt="September 27, 2024 Flyer">
-                </a>
-                <div class="show-meta">
-                    <p class="show-date">2024.09.27</p>
-                    <p class="show-venue">Bonk's</p>
-                    <p class="show-location">Philadelphia, PA</p>
-                    <p class="show-bands">w/
-                        <a href="https://www.metal-archives.com/bands/Hematoid/3540514260" target="_blank">Hematoid</a>,
-                        <a href="https://www.metal-archives.com/bands/Nuclear_Tomb/3540450829" target="_blank">Nuclear Tomb</a>,
-                        <a href="https://www.metal-archives.com/bands/Bone_Weapon/3540520043" target="_blank">Bone Weapon</a>,
-                        <a href="https://www.metal-archives.com/bands/Cavern_Womb/3540498871" target="_blank">Cavern Womb</a>
-                    </p>
-                </div>
-            </div>
-
-            <div class="show-entry">
-                <a href="updated.png" target="_blank" class="show-flyer">
-                    <img src="updated.png" alt="September 7, 2024 Flyer">
-                </a>
-                <div class="show-meta">
-                    <p class="show-date">2024.09.07</p>
-                    <p class="show-venue">Bonk's</p>
-                    <p class="show-location">Philadelphia, PA</p>
-                    <p class="show-bands">w/
-                        <a href="https://www.metal-archives.com/bands/Malignancy/403" target="_blank">Malignancy</a>,
-                        <a href="https://www.metal-archives.com/bands/Coffin_Dust/3540314669" target="_blank">Coffin Dust</a>,
-                        <a href="https://www.metal-archives.com/bands/Entrail_Asphyxiation/3540529081" target="_blank">Entrail Asphyxiation</a>
-                    </p>
-                </div>
-            </div>
-
-            <div class="show-entry">
-                <a href="UG poster new IG smaller.png" target="_blank" class="show-flyer">
-                    <img src="UG poster new IG smaller.png" alt="August 16, 2024 Flyer">
-                </a>
-                <div class="show-meta">
-                    <p class="show-date">2024.08.16</p>
-                    <p class="show-venue">Foto Club</p>
-                    <p class="show-location">Philadelphia, PA</p>
-                    <p class="show-bands">w/
-                        <a href="https://www.metal-archives.com/bands/Undergang/3540287330" target="_blank">Undergang</a>,
-                        <a href="https://www.metal-archives.com/bands/Scattered_Remnants/2157" target="_blank">Scattered Remnants</a>,
-                        <a href="https://www.metal-archives.com/bands/Moros/3540399945" target="_blank">Moros</a>,
-                        <a href="https://www.metal-archives.com/bands/Blood_Spore/3540451094" target="_blank">Blood Spore</a>,
-                        <a href="https://www.metal-archives.com/bands/Bone_Weapon/3540520043" target="_blank">Bone Weapon</a>
-                    </p>
-                </div>
-            </div>
-
-            <div class="show-entry">
-                <a href="deterioeration4foto1.jpg" target="_blank" class="show-flyer">
-                    <img src="deterioeration4foto1.jpg" alt="June 27, 2024 Flyer">
-                </a>
-                <div class="show-meta">
-                    <p class="show-date">2024.06.27</p>
-                    <p class="show-venue">Foto Club</p>
-                    <p class="show-location">Philadelphia, PA</p>
-                    <p class="show-bands">w/
-                        <a href="https://www.metal-archives.com/bands/Deterioration/23534" target="_blank">Deterioration</a>,
-                        <a href="https://www.metal-archives.com/bands/Maul/3540436341" target="_blank">Maul</a>,
-                        <a href="https://www.metal-archives.com/bands/Entrail_Asphyxiation/3540529081" target="_blank">Entrail Asphyxiation</a>
-                    </p>
-                </div>
-            </div>
-
-        </main>
+      </div>
     </div>
+
+    <!-- ── 2025 ── -->
+    <div class="year-section open" id="year-2025">
+      <button class="year-toggle" aria-expanded="true" aria-controls="body-2025" onclick="toggleYear('year-2025')">
+        <span class="year-label">2025</span>
+        <span class="year-count">7 shows</span>
+        <svg class="year-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="year-body" id="body-2025">
+
+        <div class="show-item">
+          <div class="show-date-col">
+            <div class="show-date">Dec 28</div>
+            <div class="show-day">Sunday</div>
+          </div>
+          <div class="show-details">
+            <div class="show-venue">Nikki Lopez</div>
+            <div class="show-info">
+              Philadelphia, PA<br>
+              w/ <a href="https://www.metal-archives.com/bands/Anal_Stabwound/3540481288" target="_blank" rel="noopener noreferrer"><strong>Anal Stabwound</strong></a>,
+              <a href="https://www.metal-archives.com/bands/Compulsed/3540543423" target="_blank" rel="noopener noreferrer">Compulsed</a>,
+              <a href="https://www.metal-archives.com/bands/Disarticulate/3540574239" target="_blank" rel="noopener noreferrer">Disarticulate</a>
+            </div>
+            <div class="show-flyer">
+              <img src="ANALSW2025WBORDER.jpg" alt="December 28, 2025 show flyer" loading="lazy">
+            </div>
+          </div>
+        </div>
+
+        <div class="show-item">
+          <div class="show-date-col">
+            <div class="show-date">Dec 5</div>
+            <div class="show-day">Friday</div>
+          </div>
+          <div class="show-details">
+            <div class="show-venue">The Snake Pit</div>
+            <div class="show-info">
+              Philadelphia, PA<br>
+              w/ <a href="https://www.metal-archives.com/bands/Kontusion/3540503538" target="_blank" rel="noopener noreferrer"><strong>Kontusion</strong></a>,
+              <a href="https://www.instagram.com/sevlezu/" target="_blank" rel="noopener noreferrer">Sev Lezu</a>,
+              <a href="https://www.metal-archives.com/bands/Spesimin/3540467968" target="_blank" rel="noopener noreferrer">Spesimin</a>
+            </div>
+            <div class="show-flyer">
+              <img src="20251205_KONTUSION_ALT_PRINT.jpg" alt="December 5, 2025 show flyer" loading="lazy">
+            </div>
+          </div>
+        </div>
+
+        <div class="show-item">
+          <div class="show-date-col">
+            <div class="show-date">Sep 13</div>
+            <div class="show-day">Saturday</div>
+          </div>
+          <div class="show-details">
+            <div class="show-venue">The Snake Pit</div>
+            <div class="show-info">
+              Philadelphia, PA<br>
+              w/ <a href="https://www.metal-archives.com/bands/Coffin_Dust/3540314669" target="_blank" rel="noopener noreferrer"><strong>Coffin Dust</strong></a>,
+              <a href="https://strangemono.com/concrete-caveman/" target="_blank" rel="noopener noreferrer">Concrete Caveman</a>,
+              <a href="https://hateofman.bandcamp.com/album/2025-promo" target="_blank" rel="noopener noreferrer">Hate of Man</a>
+            </div>
+            <div class="show-flyer">
+              <img src="CEASAREANRELEASE9 (1).jpg" alt="September 13, 2025 show flyer" loading="lazy">
+            </div>
+          </div>
+        </div>
+
+        <div class="show-item">
+          <div class="show-date-col">
+            <div class="show-date">Aug 15</div>
+            <div class="show-day">Friday</div>
+          </div>
+          <div class="show-details">
+            <div class="show-venue">Mr. Beery's</div>
+            <div class="show-info">Philadelphia, PA</div>
+            <div class="show-flyer">
+              <img src="BBIV.png" alt="August 15, 2025 show flyer" loading="lazy">
+            </div>
+          </div>
+        </div>
+
+        <div class="show-item">
+          <div class="show-date-col">
+            <div class="show-date">Aug 13</div>
+            <div class="show-day">Wednesday</div>
+          </div>
+          <div class="show-details">
+            <div class="show-venue">The Snake Pit</div>
+            <div class="show-info">
+              Philadelphia, PA<br>
+              w/ <a href="https://www.metal-archives.com/bands/%E6%B3%A8%E5%B0%84%E9%87%9D%E6%B7%B7%E5%85%A5%E8%B1%9A/3540386394" target="_blank" rel="noopener noreferrer"><strong>Needle Contaminated Pork</strong></a>,
+              <a href="https://www.metal-archives.com/bands/Charcuterie/" target="_blank" rel="noopener noreferrer">Charcuterie</a>
+            </div>
+            <div class="show-flyer">
+              <img src="NEEDLEPORKFINAL2.jpg" alt="August 13, 2025 show flyer" loading="lazy">
+            </div>
+          </div>
+        </div>
+
+        <div class="show-item">
+          <div class="show-date-col">
+            <div class="show-date">Jul 22</div>
+            <div class="show-day">Tuesday</div>
+          </div>
+          <div class="show-details">
+            <div class="show-venue">Nikki Lopez</div>
+            <div class="show-info">
+              Philadelphia, PA<br>
+              w/ <a href="https://cavemoth.bandcamp.com/" target="_blank" rel="noopener noreferrer"><strong>Cave Moth</strong></a>,
+              <a href="https://www.metal-archives.com/bands/Conglaciation/" target="_blank" rel="noopener noreferrer">Conglaciation</a>,
+              <a href="https://www.metal-archives.com/bands/Charcuterie/" target="_blank" rel="noopener noreferrer">Charcuterie</a>
+            </div>
+            <div class="show-flyer">
+              <img src="N LOPEZ.jpg" alt="July 22, 2025 show flyer" loading="lazy">
+            </div>
+          </div>
+        </div>
+
+        <div class="show-item">
+          <div class="show-date-col">
+            <div class="show-date">Jan 24</div>
+            <div class="show-day">Friday</div>
+          </div>
+          <div class="show-details">
+            <div class="show-venue">Milkboy</div>
+            <div class="show-info">
+              Philadelphia, PA<br>
+              w/ <a href="https://www.metal-archives.com/bands/Vile_Form/3540550983" target="_blank" rel="noopener noreferrer"><strong>Vile Form</strong></a>,
+              <a href="https://thinshred.bandcamp.com/album/dusk" target="_blank" rel="noopener noreferrer">Thin</a>,
+              <a href="https://familygarden121.bandcamp.com/" target="_blank" rel="noopener noreferrer">Family Garden</a>
+            </div>
+            <div class="show-flyer">
+              <img src="imagejpeg_0.jpg" alt="January 24, 2025 show flyer" loading="lazy">
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── 2024 ── -->
+    <div class="year-section" id="year-2024">
+      <button class="year-toggle" aria-expanded="false" aria-controls="body-2024" onclick="toggleYear('year-2024')">
+        <span class="year-label">2024</span>
+        <span class="year-count">5 shows</span>
+        <svg class="year-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="year-body" id="body-2024">
+
+        <div class="show-item">
+          <div class="show-date-col">
+            <div class="show-date">Nov 16</div>
+            <div class="show-day">Saturday</div>
+          </div>
+          <div class="show-details">
+            <div class="show-venue">The Sanctuary</div>
+            <div class="show-info">
+              Philadelphia, PA<br>
+              w/ <a href="https://strangemono.com/concrete-caveman/" target="_blank" rel="noopener noreferrer"><strong>Concrete Caveman</strong></a>,
+              <a href="https://www.metal-archives.com/bands/Moisturizer/3540442666" target="_blank" rel="noopener noreferrer">Moisturizer</a>,
+              <a href="https://vileenemy.bandcamp.com/" target="_blank" rel="noopener noreferrer">Vile Enemy</a>
+            </div>
+            <div class="show-flyer">
+              <img src="WBG_RELEASE_SHOWFINAL2.jpg" alt="November 16, 2024 show flyer" loading="lazy">
+            </div>
+          </div>
+        </div>
+
+        <div class="show-item">
+          <div class="show-date-col">
+            <div class="show-date">Sep 27</div>
+            <div class="show-day">Friday</div>
+          </div>
+          <div class="show-details">
+            <div class="show-venue">Bonk's</div>
+            <div class="show-info">
+              Philadelphia, PA<br>
+              w/ <a href="https://www.metal-archives.com/bands/Hematoid/3540514260" target="_blank" rel="noopener noreferrer"><strong>Hematoid</strong></a>,
+              <a href="https://www.metal-archives.com/bands/Nuclear_Tomb/3540450829" target="_blank" rel="noopener noreferrer">Nuclear Tomb</a>,
+              <a href="https://www.metal-archives.com/bands/Bone_Weapon/3540520043" target="_blank" rel="noopener noreferrer">Bone Weapon</a>,
+              <a href="https://www.metal-archives.com/bands/Cavern_Womb/3540498871" target="_blank" rel="noopener noreferrer">Cavern Womb</a>
+            </div>
+            <div class="show-flyer">
+              <img src="09.27.24 death sculpted copy.jpg" alt="September 27, 2024 show flyer" loading="lazy">
+            </div>
+          </div>
+        </div>
+
+        <div class="show-item">
+          <div class="show-date-col">
+            <div class="show-date">Sep 7</div>
+            <div class="show-day">Saturday</div>
+          </div>
+          <div class="show-details">
+            <div class="show-venue">Bonk's</div>
+            <div class="show-info">
+              Philadelphia, PA<br>
+              w/ <a href="https://www.metal-archives.com/bands/Malignancy/403" target="_blank" rel="noopener noreferrer"><strong>Malignancy</strong></a>,
+              <a href="https://www.metal-archives.com/bands/Coffin_Dust/3540314669" target="_blank" rel="noopener noreferrer">Coffin Dust</a>,
+              <a href="https://www.metal-archives.com/bands/Entrail_Asphyxiation/3540529081" target="_blank" rel="noopener noreferrer">Entrail Asphyxiation</a>
+            </div>
+            <div class="show-flyer">
+              <img src="updated.png" alt="September 7, 2024 show flyer" loading="lazy">
+            </div>
+          </div>
+        </div>
+
+        <div class="show-item">
+          <div class="show-date-col">
+            <div class="show-date">Aug 16</div>
+            <div class="show-day">Friday</div>
+          </div>
+          <div class="show-details">
+            <div class="show-venue">Foto Club</div>
+            <div class="show-info">
+              Philadelphia, PA<br>
+              w/ <a href="https://www.metal-archives.com/bands/Undergang/3540287330" target="_blank" rel="noopener noreferrer"><strong>Undergang</strong></a>,
+              <a href="https://www.metal-archives.com/bands/Scattered_Remnants/2157" target="_blank" rel="noopener noreferrer">Scattered Remnants</a>,
+              <a href="https://www.metal-archives.com/bands/Moros/3540399945" target="_blank" rel="noopener noreferrer">Moros</a>,
+              <a href="https://www.metal-archives.com/bands/Blood_Spore/3540451094" target="_blank" rel="noopener noreferrer">Blood Spore</a>,
+              <a href="https://www.metal-archives.com/bands/Bone_Weapon/3540520043" target="_blank" rel="noopener noreferrer">Bone Weapon</a>
+            </div>
+            <div class="show-flyer">
+              <img src="UG poster new IG smaller.png" alt="August 16, 2024 show flyer" loading="lazy">
+            </div>
+          </div>
+        </div>
+
+        <div class="show-item">
+          <div class="show-date-col">
+            <div class="show-date">Jun 27</div>
+            <div class="show-day">Thursday</div>
+          </div>
+          <div class="show-details">
+            <div class="show-venue">Foto Club</div>
+            <div class="show-info">
+              Philadelphia, PA<br>
+              w/ <a href="https://www.metal-archives.com/bands/Deterioration/23534" target="_blank" rel="noopener noreferrer"><strong>Deterioration</strong></a>,
+              <a href="https://www.metal-archives.com/bands/Maul/3540436341" target="_blank" rel="noopener noreferrer">Maul</a>,
+              <a href="https://www.metal-archives.com/bands/Entrail_Asphyxiation/3540529081" target="_blank" rel="noopener noreferrer">Entrail Asphyxiation</a>
+            </div>
+            <div class="show-flyer">
+              <img src="deterioeration4foto1.jpg" alt="June 27, 2024 show flyer" loading="lazy">
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Nav mobile toggle
+  const toggle = document.getElementById('nav-toggle');
+  const links = document.getElementById('nav-links');
+  toggle.addEventListener('click', () => links.classList.toggle('open'));
+  links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => links.classList.remove('open')));
+
+  // Year accordion
+  function toggleYear(id) {
+    const section = document.getElementById(id);
+    const btn = section.querySelector('.year-toggle');
+    const isOpen = section.classList.contains('open');
+    section.classList.toggle('open', !isOpen);
+    btn.setAttribute('aria-expanded', String(!isOpen));
+  }
+</script>
+
 </body>
 </html>

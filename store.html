@@ -1,100 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="CAESAREAN — Store and merch ordering.">
-    <title>CAESAREAN — Store</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
-<link rel="icon" href="favicon.ico?v=2">
-<link rel="icon" type="image/ico" sizes="32x32" href="favicon.ico?v=2">
-<link rel="shortcut icon" href="favicon.ico?v=2">
-    
-    <script async src="https://plausible.io/js/pa-NxrS-ZBB3CydIa5kbqjEk.js"></script>
-    <script>
-      window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
-      plausible.init()
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CAESAREAN — Store and merch ordering.">
+  <title>CAESAREAN — Store</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="favicon.ico?v=2">
+  <link rel="apple-touch-icon" href="logo.png">
+  <script data-goatcounter="https://caesarean.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </head>
 <body>
-    <div class="page">
-        <aside class="sidebar">
-            <a href="main.html" class="sidebar-logo">
-                <img src="logo.png" alt="Caesarean">
-            </a>
-            <nav class="sidebar-nav">
-                <a href="main.html">Music</a>
-                <a href="upcoming.html">Upcoming</a>
-                <a href="previous.html">Previous</a>
-                <a href="photos.html">Photos</a>
-<a href="press.html">Press</a>
-                <a href="bio.html">Bio</a>
-            </nav>
-            <div class="sidebar-links">
-                <a href="https://www.instagram.com/caesarean215/" target="_blank" rel="noopener noreferrer">Instagram</a>
-                <a href="https://hpgd.bandcamp.com/album/wretched-decrepitude" target="_blank" rel="noopener noreferrer">Bandcamp</a>
-</div>
-            <p class="sidebar-copy">&copy; Caesarean &mdash; Philadelphia, PA</p>
-        </aside>
 
-        <main class="content">
-            <p class="page-label">Store</p>
-            <p class="store-note">Shipping within the US. International orders &mdash; <a href="mailto:contact.caesarean@gmail.com">email us first</a>. Physical copies are also available via <a href="https://shop.horrorpaingoredeath.com/collections/caesarean-wretched-decrepitude" target="_blank" rel="noopener noreferrer">HPGD Shop</a>.</p>
+<header class="nav" id="nav">
+  <nav class="nav-links" id="nav-links">
+    <a href="main.html">Music</a>
+    <a href="upcoming.html">Upcoming</a>
+    <a href="previous.html">Previous</a>
+    <a href="photos.html">Photos</a>
+    <a href="bio.html">Bio</a>
+    <a href="https://www.instagram.com/caesarean215/" target="_blank" rel="noopener noreferrer" class="nav-ig">Instagram ↗</a>
+  </nav>
+  <button class="nav-toggle" id="nav-toggle" aria-label="Open menu">
+    <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  </button>
+</header>
 
-            <div class="product-grid">
-                <div class="product-card">
-                    <img src="WD Cover Digital.png" alt="Wretched Decrepitude CD" class="product-img">
-                    <p class="product-name">Wretched Decrepitude &mdash; CD</p>
-                    <p class="product-price">$8.00</p>
-                    <p class="product-desc">Debut EP. Six tracks. Horror Pain Gore Death Productions, 2025.</p>
-                    <a href="https://buy.stripe.com/REPLACE_WITH_CD_LINK" target="_blank" rel="noopener noreferrer" class="buy-btn">Order</a>
-                </div>
+<div class="store-page">
+  <div class="container">
 
-                <div class="product-card">
-                    <div class="product-img-empty">Photo Coming</div>
-                    <p class="product-name">T-Shirt</p>
-                    <p class="product-price">$20.00</p>
-                    <p class="product-desc">Black. Select size below. Printed in Philadelphia.</p>
-                    <div class="size-row">
-                        <a href="https://buy.stripe.com/REPLACE_SHIRT_S" target="_blank" rel="noopener noreferrer" class="size-link">S</a>
-                        <a href="https://buy.stripe.com/REPLACE_SHIRT_M" target="_blank" rel="noopener noreferrer" class="size-link">M</a>
-                        <a href="https://buy.stripe.com/REPLACE_SHIRT_L" target="_blank" rel="noopener noreferrer" class="size-link">L</a>
-                        <a href="https://buy.stripe.com/REPLACE_SHIRT_XL" target="_blank" rel="noopener noreferrer" class="size-link">XL</a>
-                        <a href="https://buy.stripe.com/REPLACE_SHIRT_XXL" target="_blank" rel="noopener noreferrer" class="size-link">XXL</a>
-                    </div>
-                </div>
+    <h1 class="page-heading">Store</h1>
+    <p class="store-note">Shipping within the US. International orders — <a href="mailto:contact.caesarean@gmail.com">email us first</a>. Physical copies also available via <a href="https://shop.horrorpaingoredeath.com/collections/caesarean-wretched-decrepitude" target="_blank" rel="noopener noreferrer">HPGD Shop</a>.</p>
 
-                <div class="product-card">
-                    <div class="product-img-empty">Photo Coming</div>
-                    <p class="product-name">Koozie</p>
-                    <p class="product-price">$5.00</p>
-                    <p class="product-desc">Neoprene can koozie.</p>
-                    <a href="https://buy.stripe.com/REPLACE_WITH_KOOZIE_LINK" target="_blank" rel="noopener noreferrer" class="buy-btn">Order</a>
-                </div>
+    <div class="product-grid">
 
-                <div class="product-card">
-                    <div class="product-img-empty">Photo Coming</div>
-                    <p class="product-name">Hat</p>
-                    <p class="product-price">$25.00</p>
-                    <p class="product-desc">Structured 6-panel. One size.</p>
-                    <a href="https://buy.stripe.com/REPLACE_WITH_HAT_LINK" target="_blank" rel="noopener noreferrer" class="buy-btn">Order</a>
-                </div>
+      <div class="product-card">
+        <img src="WD Cover Digital.png" alt="Wretched Decrepitude CD" class="product-img">
+        <div class="product-body">
+          <div class="product-name">Wretched Decrepitude — CD</div>
+          <div class="product-price">$8</div>
+          <div class="product-desc">Debut EP. Six tracks. Horror Pain Gore Death Productions, 2025.</div>
+          <a href="https://buy.stripe.com/REPLACE_WITH_CD_LINK" target="_blank" rel="noopener noreferrer" class="buy-btn">Order →</a>
+        </div>
+      </div>
 
-                <div class="product-card">
-                    <img src="WD Cover Digital.png" alt="Bundle" class="product-img">
-                    <p class="product-name">CD + Shirt Bundle</p>
-                    <p class="product-price">$25.00</p>
-                    <p class="product-desc">Wretched Decrepitude CD + shirt. Specify shirt size at checkout.</p>
-                    <a href="https://buy.stripe.com/REPLACE_WITH_BUNDLE_LINK" target="_blank" rel="noopener noreferrer" class="buy-btn">Order</a>
-                </div>
-            </div>
+      <div class="product-card">
+        <div class="product-img-placeholder">Photo Coming</div>
+        <div class="product-body">
+          <div class="product-name">T-Shirt</div>
+          <div class="product-price">$20</div>
+          <div class="product-desc">Black. Printed in Philadelphia. Select size:</div>
+          <div class="size-row">
+            <a href="https://buy.stripe.com/REPLACE_SHIRT_S" target="_blank" rel="noopener noreferrer" class="size-link">S</a>
+            <a href="https://buy.stripe.com/REPLACE_SHIRT_M" target="_blank" rel="noopener noreferrer" class="size-link">M</a>
+            <a href="https://buy.stripe.com/REPLACE_SHIRT_L" target="_blank" rel="noopener noreferrer" class="size-link">L</a>
+            <a href="https://buy.stripe.com/REPLACE_SHIRT_XL" target="_blank" rel="noopener noreferrer" class="size-link">XL</a>
+            <a href="https://buy.stripe.com/REPLACE_SHIRT_XXL" target="_blank" rel="noopener noreferrer" class="size-link">XXL</a>
+          </div>
+        </div>
+      </div>
 
-            <p class="store-note">Questions: <a href="mailto:contact.caesarean@gmail.com">contact.caesarean@gmail.com</a></p>
+      <div class="product-card">
+        <div class="product-img-placeholder">Photo Coming</div>
+        <div class="product-body">
+          <div class="product-name">Koozie</div>
+          <div class="product-price">$5</div>
+          <div class="product-desc">Neoprene can koozie.</div>
+          <a href="https://buy.stripe.com/REPLACE_WITH_KOOZIE_LINK" target="_blank" rel="noopener noreferrer" class="buy-btn">Order →</a>
+        </div>
+      </div>
 
-        </main>
+      <div class="product-card">
+        <div class="product-img-placeholder">Photo Coming</div>
+        <div class="product-body">
+          <div class="product-name">Hat</div>
+          <div class="product-price">$25</div>
+          <div class="product-desc">Structured 6-panel. One size.</div>
+          <a href="https://buy.stripe.com/REPLACE_WITH_HAT_LINK" target="_blank" rel="noopener noreferrer" class="buy-btn">Order →</a>
+        </div>
+      </div>
+
+      <div class="product-card">
+        <img src="WD Cover Digital.png" alt="CD + Shirt Bundle" class="product-img">
+        <div class="product-body">
+          <div class="product-name">CD + Shirt Bundle</div>
+          <div class="product-price">$25</div>
+          <div class="product-desc">Wretched Decrepitude CD + shirt. Specify size at checkout.</div>
+          <a href="https://buy.stripe.com/REPLACE_WITH_BUNDLE_LINK" target="_blank" rel="noopener noreferrer" class="buy-btn">Order →</a>
+        </div>
+      </div>
+
     </div>
+
+    <p class="store-note" style="margin-top:48px;">Questions: <a href="mailto:contact.caesarean@gmail.com">contact.caesarean@gmail.com</a></p>
+
+  </div>
+</div>
+
+<script>
+  const toggle = document.getElementById('nav-toggle');
+  const links = document.getElementById('nav-links');
+  toggle.addEventListener('click', () => links.classList.toggle('open'));
+  links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => links.classList.remove('open')));
+</script>
+
 </body>
 </html>
