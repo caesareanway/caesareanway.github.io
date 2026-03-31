@@ -274,7 +274,7 @@ body.splash::before {
 .music-page::before {
   background-image: url('tx-liquid.jpg');
   background-position: center top;
-  opacity: 0.04;
+  opacity: 0.03;
 }
 
 /* Shows pages — marble statue reaching figure, barely there */
