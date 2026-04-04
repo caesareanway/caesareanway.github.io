@@ -573,7 +573,7 @@
   <div class="container">
 
     <h1 class="page-heading">Store</h1>
-    <p class="store-note">US shipping only — $5.00 flat rate. International orders? <a href="mailto:contact.caesarean@gmail.com">Email us first.</a></p>
+    <p class="store-note">US shipping only — $5.00 flat rate. International orders? <a href="/cdn-cgi/l/email-protection#87e4e8e9f3e6e4f3a9e4e6e2f4e6f5e2e6e9c7e0eae6eeeba9e4e8ea">Email us first.</a></p>
 
     <div class="product-list">
 
@@ -649,7 +649,7 @@
   </div>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
   // ── Config ────────────────────────────────────────────────
   // STEP 1: Replace with your Stripe publishable key after account setup
   const STRIPE_PK = 'pk_live_51TIJeW7huAyLljRFr9QXZMZR2VQFxJV4OBt6upmIejiMAbONuS9Yz8d0IZcPsGExOg7wNNs6W7iWTtRvFnG17XOj00rSUKb4Dp';
@@ -1113,9 +1113,8 @@
       if (e.target === this) closeZoom();
     });
 
-    // Initialize: load inventory from Supabase and set up Stripe
-    loadInventory().then(() => {
-      updateStockDisplay();
-      initStripe();
-    });
+    // Load inventory from Supabase on page load
+    loadInventory();
   </script>
+
+    // In
