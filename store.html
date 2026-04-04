@@ -618,9 +618,9 @@
         <div class="product-info">
           <span class="product-tag">T-Shirt — Limited Stock</span>
           <div class="product-row-name">Caesarean T-Shirt</div>
-          <div class="product-row-price">$15</div>
+          <div class="product-row-price">$20</div>
           <p class="product-row-desc">
-            Black. Screen printed in Philadelphia. 
+            Black. Screen printed by Optmistic Prints. 
             <br>Remaining sizes: XL, 2XL, 3XL.
           </p>
           <select class="size-select" id="shirt-size" onchange="onSizeChange()">
@@ -655,7 +655,7 @@
 
   const PRODUCTS = {
     cd:    { name: 'Wretched Decrepitude EP', format: 'CD', price: 10.00 },
-    shirt: { name: 'Caesarean T-Shirt',       format: 'T-Shirt', price: 15.00 },
+    shirt: { name: 'Caesarean T-Shirt',       format: 'T-Shirt', price: 20.00 },
   };
 
   const SHIPPING = 5.00;
@@ -940,10 +940,10 @@
       document.getElementById('express-cd').classList.add('visible');
     }
 
-    // ── Shirt — $15 product + $5 shipping = $20 total ───────
+    // ── Shirt — $20 product + $5 shipping = $25 total ───────
     const prShirt = stripe.paymentRequest({
       country: 'US', currency: 'usd',
-      total: { label: 'Caesarean T-Shirt', amount: 2000 },
+      total: { label: 'Caesarean T-Shirt', amount: 2500 },
       requestShipping: true,
       shippingOptions,
     });
@@ -958,7 +958,7 @@
     prShirt.on('paymentmethod', ev => {
       const size = document.getElementById('shirt-size').value || '?';
       handlePaymentMethod(ev, {
-        amount: 2000,
+        amount: 2500,
         description: `Caesarean T-Shirt (${size})`,
         shippingAddress: ev.shippingAddress,
       });
