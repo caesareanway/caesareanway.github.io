@@ -457,8 +457,8 @@ exports.handler = async (event) => {
         '<div class="quantity-number ' + (isLow ? 'quantity-low' : '') + '">' + qty + '</div>' +
         '</div>' +
         '<div class="controls">' +
-        '<button class="subtract" onclick="updateInventory(\'' + product.id + '\', -1)">−</button>' +
-        '<button class="add" onclick="updateInventory(\'' + product.id + '\', 1)">+</button>' +
+        '<button class="subtract" onclick="updateInventory(\\'' + product.id + '\\', -1)">&#8722;</button>' +
+        '<button class="add" onclick="updateInventory(\\'' + product.id + '\\', 1)">+</button>' +
         '</div>' +
         '<div class="last-updated" id="updated-' + product.id + '"></div>' +
         '</div>';
