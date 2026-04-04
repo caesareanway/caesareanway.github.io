@@ -29,10 +29,19 @@ exports.handler = async (event) => {
       quantity: item.qty,
     }));
 
+    // Store cart items in metadata for webhook to process after successful payment
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: lineItems,
       mode: 'payment',
+
+      // Store cart items for inventory decrement (used by webhook)
+      metadata: {
+        cart_items: JSON.stringify(items.map(item => ({
+          sku: item.id, // e.g., 'cd' or 'shirt-XL'
+          qty: item.qty,
+        }))),
+      },
 
       // Collect US shipping address
       shipping_address_collection: {

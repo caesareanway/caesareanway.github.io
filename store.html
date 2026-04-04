@@ -12,6 +12,7 @@
   <link rel="icon" href="assets/images/favicon.ico?v=2">
   <link rel="apple-touch-icon" href="assets/images/logo.png">
   <script src="https://js.stripe.com/v3/"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/module/index.min.js"></script>
   <script data-goatcounter="https://caesarean.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 
   <style>
@@ -660,13 +661,58 @@
 
   const SHIPPING = 5.00;
 
+  // ── Supabase Setup ─────────────────────────────────────────────────────
+  const SUPABASE_URL = 'https://lflmxpmyynjyuwvdpwqu.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxmbG14cG15eW5qeXV3dmRwd3F1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM5MjczNDcsImV4cCI6MjA0OTUwMzM0N30.9H46gCHaLQa0FZWKLSmjmMXdsmCdL3vwQnKH2Xyv_sI';
+  let supabase = null;
+
+  // Initialize Supabase client (wait for library to load)
+  async function initSupabase() {
+    if (supabase) return supabase;
+
+    // Try window.supabase first, fallback to ESM import
+    if (window.supabase) {
+      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    } else {
+      const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+      supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+    return supabase;
+  }
+
   // ── Inventory ────────────────────────────────────────────────────────
-  const INVENTORY = {
-    'cd': 32,
-    'shirt-XL': 11,
-    'shirt-2XL': 3,
-    'shirt-3XL': 1
-  };
+  let INVENTORY = {};
+
+  // Fetch live inventory from Supabase on page load
+  async function loadInventory() {
+    try {
+      const client = await initSupabase();
+      const { data, error } = await client
+        .from('inventory')
+        .select('sku, quantity');
+
+      if (error) throw error;
+
+      // Map Supabase rows to INVENTORY object
+      INVENTORY = {};
+      data.forEach(row => {
+        INVENTORY[row.sku] = row.quantity;
+      });
+
+      console.log('Inventory loaded from Supabase:', INVENTORY);
+      updateStockDisplay();
+    } catch (err) {
+      console.error('Failed to load inventory:', err);
+      // Fallback to hardcoded values if Supabase fails
+      INVENTORY = {
+        'cd': 32,
+        'shirt-XL': 11,
+        'shirt-2XL': 3,
+        'shirt-3XL': 1
+      };
+      updateStockDisplay();
+    }
+  }
 
   let sold = {
     'cd': 0,
@@ -1067,7 +1113,9 @@
       if (e.target === this) closeZoom();
     });
 
-    // Initialize stock display on page load
-    updateStockDisplay();
-    initStripe();
+    // Initialize: load inventory from Supabase and set up Stripe
+    loadInventory().then(() => {
+      updateStockDisplay();
+      initStripe();
+    });
   </script>

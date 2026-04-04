@@ -303,35 +303,47 @@ exports.handler = async (event) => {
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script async src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   // Credentials injected from server
   const SUPABASE_URL = '${supabaseUrl}';
   const SUPABASE_ANON_KEY = '${supabaseKey}';
   const ADMIN_PASSWORD = '${adminPassword}';
 
-  // Use Supabase from window (already loaded by CDN)
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  // Initialize Supabase - will be set after CDN loads
+  let supabase = null;
+
+  // Wait for Supabase library to load
+  async function initSupabase() {
+    if (!window.supabase) {
+      // Try to load from the explicit ESM import
+      const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+      supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    } else {
+      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+    return supabase;
+  }
 
   let inventory = {};
   let isLoggedIn = false;
 
   // Check if already logged in
-  function checkLogin() {
+  async function checkLogin() {
     if (localStorage.getItem('caesarean_inventory_auth')) {
       isLoggedIn = true;
       showApp();
-      initializeApp();
+      await initializeApp();
     }
   }
 
-  function handleLogin() {
+  async function handleLogin() {
     const password = document.getElementById('passwordInput').value;
     if (password === ADMIN_PASSWORD) {
       isLoggedIn = true;
       localStorage.setItem('caesarean_inventory_auth', 'true');
       showApp();
-      initializeApp();
+      await initializeApp();
     } else {
       alert('Invalid password');
       document.getElementById('passwordInput').value = '';
@@ -355,6 +367,11 @@ exports.handler = async (event) => {
     setStatus('Connecting to Supabase...', 'syncing');
 
     try {
+      // Ensure Supabase is initialized
+      if (!supabase) {
+        await initSupabase();
+      }
+
       // Fetch current inventory
       const { data, error } = await supabase
         .from('inventory')
@@ -363,30 +380,38 @@ exports.handler = async (event) => {
 
       if (error) throw error;
 
-      data.forEach(item => {
-        inventory[item.product] = item.quantity;
-      });
+      if (data && data.length > 0) {
+        data.forEach(item => {
+          inventory[item.product] = item.quantity;
+        });
+      }
 
       renderInventory();
       setStatus('Connected', 'synced');
 
       // Subscribe to real-time changes
-      supabase
-        .channel('inventory_changes')
-        .on('postgres_changes', {
-          event: '*',
-          schema: 'public',
-          table: 'inventory'
-        }, (payload) => {
-          console.log('Real-time update:', payload);
-          inventory[payload.new.product] = payload.new.quantity;
-          renderInventory();
-          setStatus('Updated', 'synced');
-        })
-        .subscribe();
+      if (supabase && supabase.channel) {
+        supabase
+          .channel('inventory_changes')
+          .on('postgres_changes', {
+            event: '*',
+            schema: 'public',
+            table: 'inventory'
+          }, (payload) => {
+            console.log('Real-time update:', payload);
+            if (payload.new) {
+              inventory[payload.new.product] = payload.new.quantity;
+              renderInventory();
+              setStatus('Updated', 'synced');
+            }
+          })
+          .subscribe((status) => {
+            console.log('Subscription status:', status);
+          });
+      }
 
     } catch (err) {
-      console.error('Error:', err);
+      console.error('Error initializing app:', err);
       setStatus('Connection error: ' + err.message, 'error');
     }
   }
@@ -406,19 +431,17 @@ exports.handler = async (event) => {
       const qty = inventory[product.id] || 0;
       const isLow = qty < 3;
 
-      grid.innerHTML += \`
-        <div class="product-card">
-          <div class="product-name">\${product.label}</div>
-          <div class="quantity-display">
-            <div class="quantity-number \${isLow ? 'quantity-low' : ''}">\${qty}</div>
-          </div>
-          <div class="controls">
-            <button class="subtract" onclick="updateInventory('\${product.id}', -1)">−</button>
-            <button class="add" onclick="updateInventory('\${product.id}', 1)">+</button>
-          </div>
-          <div class="last-updated" id="updated-\${product.id}"></div>
-        </div>
-      \`;
+      grid.innerHTML += '<div class="product-card">' +
+        '<div class="product-name">' + product.label + '</div>' +
+        '<div class="quantity-display">' +
+        '<div class="quantity-number ' + (isLow ? 'quantity-low' : '') + '">' + qty + '</div>' +
+        '</div>' +
+        '<div class="controls">' +
+        '<button class="subtract" onclick="updateInventory(\'' + product.id + '\', -1)">−</button>' +
+        '<button class="add" onclick="updateInventory(\'' + product.id + '\', 1)">+</button>' +
+        '</div>' +
+        '<div class="last-updated" id="updated-' + product.id + '"></div>' +
+        '</div>';
     });
 
     updateCodeDisplay();
@@ -446,7 +469,11 @@ exports.handler = async (event) => {
   }
 
   function updateCodeDisplay() {
-    const code = \`INVENTORY = { 'cd': \${inventory['cd'] || 0}, 'shirt-XL': \${inventory['shirt-XL'] || 0}, 'shirt-2XL': \${inventory['shirt-2XL'] || 0}, 'shirt-3XL': \${inventory['shirt-3XL'] || 0} }\`;
+    const code = 'INVENTORY = { ' +
+      "'cd': " + (inventory['cd'] || 0) + ', ' +
+      "'shirt-XL': " + (inventory['shirt-XL'] || 0) + ', ' +
+      "'shirt-2XL': " + (inventory['shirt-2XL'] || 0) + ', ' +
+      "'shirt-3XL': " + (inventory['shirt-3XL'] || 0) + ' }';
     document.getElementById('codeDisplay').textContent = code;
   }
 
@@ -471,11 +498,21 @@ exports.handler = async (event) => {
   }
 
   // Initialize
-  checkLogin();
+  (async () => {
+    try {
+      await initSupabase();
+      await checkLogin();
+    } catch (err) {
+      console.error('Initialization error:', err);
+    }
+  })();
 
   // Allow Enter key to submit password
   document.getElementById('passwordInput')?.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') handleLogin();
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleLogin();
+    }
   });
 </script>
 
