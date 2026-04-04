@@ -8,73 +8,124 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
-  <link rel="icon" href="favicon.ico?v=2">
-  <link rel="apple-touch-icon" href="logo.png">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" href="assets/images/favicon.ico?v=2">
+  <link rel="apple-touch-icon" href="assets/images/logo.png">
   <script data-goatcounter="https://caesarean.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
   <style>
-    /* ── Year accordion ── */
-    .year-section { border-top: 1px solid var(--border); }
-    .year-section:last-child { border-bottom: 1px solid var(--border); }
-
-    .year-toggle {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 100%;
-      padding: 28px 0;
-      cursor: pointer;
-      background: none;
-      border: none;
-      text-align: left;
-      color: var(--fg);
-      gap: 16px;
+    /* Clean compact show list */
+    .year-section {
+      margin-bottom: 48px;
     }
 
-    .year-toggle:hover .year-label { color: var(--fg); }
+    .year-section:first-child {
+      margin-top: 0;
+    }
 
-    .year-label {
+    .year-header {
       font-family: var(--display);
-      font-size: clamp(3rem, 5vw, 5rem);
-      line-height: 1;
+      font-size: 2.2rem;
+      font-weight: 700;
       color: var(--fg-dim);
-      transition: color 0.2s;
+      margin: 0 0 20px 0;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      line-height: 1;
     }
 
-    .year-section.open .year-label { color: var(--fg); }
+    .shows-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 24px;
+    }
 
-    .year-count {
-      font-size: 11px;
+    .show-item {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border: none;
+      padding: 0 !important;
+    }
+
+    .show-date-col {
+      order: 2;
+      padding-top: 8px;
+    }
+
+    .show-date {
+      font-family: var(--display);
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--fg);
+      line-height: 1;
+    }
+
+    .show-day {
+      font-size: 0.75rem;
       font-weight: 600;
-      letter-spacing: 0.15em;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--fg-dim);
-      flex-shrink: 0;
+      margin-top: 2px;
     }
 
-    .year-chevron {
-      width: 20px;
-      height: 20px;
-      flex-shrink: 0;
-      stroke: var(--fg-dim);
-      fill: none;
-      stroke-width: 2;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      transition: transform 0.3s ease;
+    .show-details {
+      order: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
     }
 
-    .year-section.open .year-chevron { transform: rotate(180deg); }
-
-    .year-body {
-      display: none;
-      padding-bottom: 8px;
+    .show-venue {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--fg);
     }
 
-    .year-section.open .year-body { display: block; }
+    .show-info {
+      font-size: 0.85rem;
+      color: var(--fg-dim);
+      line-height: 1.4;
+    }
 
-    /* Show items inside accordion — no top border (year-toggle has it) */
-    .year-body .show-item:first-child { border-top: none; padding-top: 0; }
+    .show-flyer {
+      order: 0;
+      margin: 0;
+      padding: 0;
+      max-width: 280px;
+      width: 100%;
+    }
+
+    .show-flyer img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 2px;
+    }
+
+    /* Mobile adjustments */
+    @media (max-width: 600px) {
+      .shows-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .year-header {
+        font-size: 1.8rem;
+        margin-bottom: 16px;
+      }
+
+      .show-item {
+        gap: 6px;
+      }
+
+      .show-date {
+        font-size: 1.2rem;
+      }
+
+      .show-flyer {
+        max-width: none;
+      }
+    }
   </style>
 </head>
 <body>
@@ -99,19 +150,13 @@
 
     <h1 class="page-heading">Previous Shows</h1>
 
-    <!-- ── 2026 ── -->
-    <div class="year-section open" id="year-2026">
-      <button class="year-toggle" aria-expanded="true" aria-controls="body-2026" onclick="toggleYear('year-2026')">
-        <span class="year-label">2026</span>
-        <span class="year-count">1 show</span>
-        <svg class="year-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
-      </button>
-      <div class="year-body" id="body-2026">
-
+    <!-- 2026 -->
+    <div class="year-section">
+      <h2 class="year-header">2026</h2>
+      <div class="shows-grid">
         <div class="show-item">
-          <div class="show-date-col">
-            <div class="show-date">Mar 25</div>
-            <div class="show-day">Wednesday</div>
+          <div class="show-flyer">
+            <img src="assets/images/Tombs 1080x1350.jpg" alt="March 25, 2026 show flyer" loading="lazy">
           </div>
           <div class="show-details">
             <div class="show-venue">Milkboy</div>
@@ -120,28 +165,22 @@
               w/ <a href="https://www.metal-archives.com/bands/Tombs/3540372249" target="_blank" rel="noopener noreferrer"><strong>Tombs</strong></a>,
               <a href="https://www.metal-archives.com/bands/Replicant/3540411923" target="_blank" rel="noopener noreferrer">Replicant</a>
             </div>
-            <div class="show-flyer">
-              <img src="Tombs 1080x1350.jpg" alt="March 25, 2026 show flyer" loading="lazy">
-            </div>
+          </div>
+          <div class="show-date-col">
+            <div class="show-date">Mar 25</div>
+            <div class="show-day">Wednesday</div>
           </div>
         </div>
-
       </div>
     </div>
 
-    <!-- ── 2025 ── -->
-    <div class="year-section open" id="year-2025">
-      <button class="year-toggle" aria-expanded="true" aria-controls="body-2025" onclick="toggleYear('year-2025')">
-        <span class="year-label">2025</span>
-        <span class="year-count">7 shows</span>
-        <svg class="year-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
-      </button>
-      <div class="year-body" id="body-2025">
-
+    <!-- 2025 -->
+    <div class="year-section">
+      <h2 class="year-header">2025</h2>
+      <div class="shows-grid">
         <div class="show-item">
-          <div class="show-date-col">
-            <div class="show-date">Dec 28</div>
-            <div class="show-day">Sunday</div>
+          <div class="show-flyer">
+            <img src="assets/images/ANALSW2025WBORDER.jpg" alt="December 28, 2025 show flyer" loading="lazy">
           </div>
           <div class="show-details">
             <div class="show-venue">Nikki Lopez</div>
@@ -151,16 +190,16 @@
               <a href="https://www.metal-archives.com/bands/Compulsed/3540543423" target="_blank" rel="noopener noreferrer">Compulsed</a>,
               <a href="https://www.metal-archives.com/bands/Disarticulate/3540574239" target="_blank" rel="noopener noreferrer">Disarticulate</a>
             </div>
-            <div class="show-flyer">
-              <img src="ANALSW2025WBORDER.jpg" alt="December 28, 2025 show flyer" loading="lazy">
-            </div>
+          </div>
+          <div class="show-date-col">
+            <div class="show-date">Dec 28</div>
+            <div class="show-day">Sunday</div>
           </div>
         </div>
 
         <div class="show-item">
-          <div class="show-date-col">
-            <div class="show-date">Dec 5</div>
-            <div class="show-day">Friday</div>
+          <div class="show-flyer">
+            <img src="assets/images/20251205_KONTUSION_ALT_PRINT.jpg" alt="December 5, 2025 show flyer" loading="lazy">
           </div>
           <div class="show-details">
             <div class="show-venue">The Snake Pit</div>
@@ -170,16 +209,16 @@
               <a href="https://www.instagram.com/sevlezu/" target="_blank" rel="noopener noreferrer">Sev Lezu</a>,
               <a href="https://www.metal-archives.com/bands/Spesimin/3540467968" target="_blank" rel="noopener noreferrer">Spesimin</a>
             </div>
-            <div class="show-flyer">
-              <img src="20251205_KONTUSION_ALT_PRINT.jpg" alt="December 5, 2025 show flyer" loading="lazy">
-            </div>
+          </div>
+          <div class="show-date-col">
+            <div class="show-date">Dec 5</div>
+            <div class="show-day">Friday</div>
           </div>
         </div>
 
         <div class="show-item">
-          <div class="show-date-col">
-            <div class="show-date">Sep 13</div>
-            <div class="show-day">Saturday</div>
+          <div class="show-flyer">
+            <img src="assets/images/CEASAREANRELEASE9 (1).jpg" alt="September 13, 2025 show flyer" loading="lazy">
           </div>
           <div class="show-details">
             <div class="show-venue">The Snake Pit</div>
@@ -189,30 +228,30 @@
               <a href="https://strangemono.com/concrete-caveman/" target="_blank" rel="noopener noreferrer">Concrete Caveman</a>,
               <a href="https://hateofman.bandcamp.com/album/2025-promo" target="_blank" rel="noopener noreferrer">Hate of Man</a>
             </div>
-            <div class="show-flyer">
-              <img src="CEASAREANRELEASE9 (1).jpg" alt="September 13, 2025 show flyer" loading="lazy">
-            </div>
+          </div>
+          <div class="show-date-col">
+            <div class="show-date">Sep 13</div>
+            <div class="show-day">Saturday</div>
           </div>
         </div>
 
         <div class="show-item">
-          <div class="show-date-col">
-            <div class="show-date">Aug 15</div>
-            <div class="show-day">Friday</div>
+          <div class="show-flyer">
+            <img src="assets/images/BBIV.png" alt="August 15, 2025 show flyer" loading="lazy">
           </div>
           <div class="show-details">
             <div class="show-venue">Mr. Beery's</div>
             <div class="show-info">Bethpage, NY</div>
-            <div class="show-flyer">
-              <img src="BBIV.png" alt="August 15, 2025 show flyer" loading="lazy">
-            </div>
+          </div>
+          <div class="show-date-col">
+            <div class="show-date">Aug 15</div>
+            <div class="show-day">Friday</div>
           </div>
         </div>
 
         <div class="show-item">
-          <div class="show-date-col">
-            <div class="show-date">Aug 13</div>
-            <div class="show-day">Wednesday</div>
+          <div class="show-flyer">
+            <img src="assets/images/NEEDLEPORKFINAL2.jpg" alt="August 13, 2025 show flyer" loading="lazy">
           </div>
           <div class="show-details">
             <div class="show-venue">The Snake Pit</div>
@@ -221,16 +260,16 @@
               w/ <a href="https://www.metal-archives.com/bands/%E6%B3%A8%E5%B0%84%E9%87%9D%E6%B7%B7%E5%85%A5%E8%B1%9A/3540386394" target="_blank" rel="noopener noreferrer"><strong>Needle Contaminated Pork</strong></a>,
               <a href="https://www.metal-archives.com/bands/Charcuterie/" target="_blank" rel="noopener noreferrer">Charcuterie</a>
             </div>
-            <div class="show-flyer">
-              <img src="NEEDLEPORKFINAL2.jpg" alt="August 13, 2025 show flyer" loading="lazy">
-            </div>
+          </div>
+          <div class="show-date-col">
+            <div class="show-date">Aug 13</div>
+            <div class="show-day">Wednesday</div>
           </div>
         </div>
 
         <div class="show-item">
-          <div class="show-date-col">
-            <div class="show-date">Jul 22</div>
-            <div class="show-day">Tuesday</div>
+          <div class="show-flyer">
+            <img src="assets/images/N LOPEZ.jpg" alt="July 22, 2025 show flyer" loading="lazy">
           </div>
           <div class="show-details">
             <div class="show-venue">Nikki Lopez</div>
@@ -240,16 +279,16 @@
               <a href="https://www.metal-archives.com/bands/Conglaciation/" target="_blank" rel="noopener noreferrer">Conglaciation</a>,
               <a href="https://www.metal-archives.com/bands/Charcuterie/" target="_blank" rel="noopener noreferrer">Charcuterie</a>
             </div>
-            <div class="show-flyer">
-              <img src="N LOPEZ.jpg" alt="July 22, 2025 show flyer" loading="lazy">
-            </div>
+          </div>
+          <div class="show-date-col">
+            <div class="show-date">Jul 22</div>
+            <div class="show-day">Tuesday</div>
           </div>
         </div>
 
         <div class="show-item">
-          <div class="show-date-col">
-            <div class="show-date">Jan 24</div>
-            <div class="show-day">Friday</div>
+          <div class="show-flyer">
+            <img src="assets/images/imagejpeg_0.jpg" alt="January 24, 2025 show flyer" loading="lazy">
           </div>
           <div class="show-details">
             <div class="show-venue">Milkboy</div>
@@ -259,28 +298,22 @@
               <a href="https://thinshred.bandcamp.com/album/dusk" target="_blank" rel="noopener noreferrer">Thin</a>,
               <a href="https://familygarden121.bandcamp.com/" target="_blank" rel="noopener noreferrer">Family Garden</a>
             </div>
-            <div class="show-flyer">
-              <img src="imagejpeg_0.jpg" alt="January 24, 2025 show flyer" loading="lazy">
-            </div>
+          </div>
+          <div class="show-date-col">
+            <div class="show-date">Jan 24</div>
+            <div class="show-day">Friday</div>
           </div>
         </div>
-
       </div>
     </div>
 
-    <!-- ── 2024 ── -->
-    <div class="year-section" id="year-2024">
-      <button class="year-toggle" aria-expanded="false" aria-controls="body-2024" onclick="toggleYear('year-2024')">
-        <span class="year-label">2024</span>
-        <span class="year-count">5 shows</span>
-        <svg class="year-chevron" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
-      </button>
-      <div class="year-body" id="body-2024">
-
+    <!-- 2024 -->
+    <div class="year-section">
+      <h2 class="year-header">2024</h2>
+      <div class="shows-grid">
         <div class="show-item">
-          <div class="show-date-col">
-            <div class="show-date">Nov 16</div>
-            <div class="show-day">Saturday</div>
+          <div class="show-flyer">
+            <img src="assets/images/WBG_RELEASE_SHOWFINAL2.jpg" alt="November 16, 2024 show flyer" loading="lazy">
           </div>
           <div class="show-details">
             <div class="show-venue">The Sanctuary</div>
@@ -290,16 +323,16 @@
               <a href="https://www.metal-archives.com/bands/Moisturizer/3540442666" target="_blank" rel="noopener noreferrer">Moisturizer</a>,
               <a href="https://vileenemy.bandcamp.com/" target="_blank" rel="noopener noreferrer">Vile Enemy</a>
             </div>
-            <div class="show-flyer">
-              <img src="WBG_RELEASE_SHOWFINAL2.jpg" alt="November 16, 2024 show flyer" loading="lazy">
-            </div>
+          </div>
+          <div class="show-date-col">
+            <div class="show-date">Nov 16</div>
+            <div class="show-day">Saturday</div>
           </div>
         </div>
 
         <div class="show-item">
-          <div class="show-date-col">
-            <div class="show-date">Sep 27</div>
-            <div class="show-day">Friday</div>
+          <div class="show-flyer">
+            <img src="assets/images/09.27.24 death sculpted copy.jpg" alt="September 27, 2024 show flyer" loading="lazy">
           </div>
           <div class="show-details">
             <div class="show-venue">Bonk's</div>
@@ -310,16 +343,16 @@
               <a href="https://www.metal-archives.com/bands/Bone_Weapon/3540520043" target="_blank" rel="noopener noreferrer">Bone Weapon</a>,
               <a href="https://www.metal-archives.com/bands/Cavern_Womb/3540498871" target="_blank" rel="noopener noreferrer">Cavern Womb</a>
             </div>
-            <div class="show-flyer">
-              <img src="09.27.24 death sculpted copy.jpg" alt="September 27, 2024 show flyer" loading="lazy">
-            </div>
+          </div>
+          <div class="show-date-col">
+            <div class="show-date">Sep 27</div>
+            <div class="show-day">Friday</div>
           </div>
         </div>
 
         <div class="show-item">
-          <div class="show-date-col">
-            <div class="show-date">Sep 7</div>
-            <div class="show-day">Saturday</div>
+          <div class="show-flyer">
+            <img src="assets/images/updated.png" alt="September 7, 2024 show flyer" loading="lazy">
           </div>
           <div class="show-details">
             <div class="show-venue">Bonk's</div>
@@ -329,16 +362,16 @@
               <a href="https://www.metal-archives.com/bands/Coffin_Dust/3540314669" target="_blank" rel="noopener noreferrer">Coffin Dust</a>,
               <a href="https://www.metal-archives.com/bands/Entrail_Asphyxiation/3540529081" target="_blank" rel="noopener noreferrer">Entrail Asphyxiation</a>
             </div>
-            <div class="show-flyer">
-              <img src="updated.png" alt="September 7, 2024 show flyer" loading="lazy">
-            </div>
+          </div>
+          <div class="show-date-col">
+            <div class="show-date">Sep 7</div>
+            <div class="show-day">Saturday</div>
           </div>
         </div>
 
         <div class="show-item">
-          <div class="show-date-col">
-            <div class="show-date">Aug 16</div>
-            <div class="show-day">Friday</div>
+          <div class="show-flyer">
+            <img src="assets/images/UG poster new IG smaller.png" alt="August 16, 2024 show flyer" loading="lazy">
           </div>
           <div class="show-details">
             <div class="show-venue">Foto Club</div>
@@ -350,16 +383,16 @@
               <a href="https://www.metal-archives.com/bands/Blood_Spore/3540451094" target="_blank" rel="noopener noreferrer">Blood Spore</a>,
               <a href="https://www.metal-archives.com/bands/Bone_Weapon/3540520043" target="_blank" rel="noopener noreferrer">Bone Weapon</a>
             </div>
-            <div class="show-flyer">
-              <img src="UG poster new IG smaller.png" alt="August 16, 2024 show flyer" loading="lazy">
-            </div>
+          </div>
+          <div class="show-date-col">
+            <div class="show-date">Aug 16</div>
+            <div class="show-day">Friday</div>
           </div>
         </div>
 
         <div class="show-item">
-          <div class="show-date-col">
-            <div class="show-date">Jun 27</div>
-            <div class="show-day">Thursday</div>
+          <div class="show-flyer">
+            <img src="assets/images/deterioeration4foto1.jpg" alt="June 27, 2024 show flyer" loading="lazy">
           </div>
           <div class="show-details">
             <div class="show-venue">Foto Club</div>
@@ -369,12 +402,12 @@
               <a href="https://www.metal-archives.com/bands/Maul/3540436341" target="_blank" rel="noopener noreferrer">Maul</a>,
               <a href="https://www.metal-archives.com/bands/Entrail_Asphyxiation/3540529081" target="_blank" rel="noopener noreferrer">Entrail Asphyxiation</a>
             </div>
-            <div class="show-flyer">
-              <img src="deterioeration4foto1.jpg" alt="June 27, 2024 show flyer" loading="lazy">
-            </div>
+          </div>
+          <div class="show-date-col">
+            <div class="show-date">Jun 27</div>
+            <div class="show-day">Thursday</div>
           </div>
         </div>
-
       </div>
     </div>
 
@@ -387,15 +420,6 @@
   const links = document.getElementById('nav-links');
   toggle.addEventListener('click', () => links.classList.toggle('open'));
   links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => links.classList.remove('open')));
-
-  // Year accordion
-  function toggleYear(id) {
-    const section = document.getElementById(id);
-    const btn = section.querySelector('.year-toggle');
-    const isOpen = section.classList.contains('open');
-    section.classList.toggle('open', !isOpen);
-    btn.setAttribute('aria-expanded', String(!isOpen));
-  }
 </script>
 
 </body>
