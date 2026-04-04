@@ -57,9 +57,9 @@ exports.handler = async (event) => {
       // Send order receipt to customer automatically
       customer_creation: 'always',
 
-      // Redirect URLs
-      success_url: `${process.env.URL}/success.html`,
-      cancel_url:  `${process.env.URL}/store.html`,
+      // Redirect URLs — fallback to hardcoded domain if Netlify URL env var isn't set
+      success_url: `${process.env.URL || 'https://caesarean.org'}/success.html`,
+      cancel_url:  `${process.env.URL || 'https://caesarean.org'}/store.html`,
     });
 
     return {

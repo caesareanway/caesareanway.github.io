@@ -846,7 +846,8 @@
     } catch (err) {
       btn.disabled = false;
       btn.textContent = 'Checkout →';
-      alert('One or more of the items in your cart is out of stock. Please update or email contact.caesarean@gmail.com.');
+      const msg = err.message || 'Unknown error';
+      alert(`Checkout failed: ${msg}\n\nIf this keeps happening, email contact.caesarean@gmail.com`);
     }
   });
 
