@@ -12,7 +12,6 @@
   <link rel="icon" href="assets/images/favicon.ico?v=2">
   <link rel="apple-touch-icon" href="assets/images/logo.png">
   <script src="https://js.stripe.com/v3/"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.0/dist/module/index.min.js"></script>
   <script data-goatcounter="https://caesarean.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 
   <style>
@@ -666,18 +665,19 @@
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxmbG14cG15eW5qeXV3dmRwd3F1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzM5MjczNDcsImV4cCI6MjA0OTUwMzM0N30.9H46gCHaLQa0FZWKLSmjmMXdsmCdL3vwQnKH2Xyv_sI';
   let supabase = null;
 
-  // Initialize Supabase client (wait for library to load)
+  // Initialize Supabase client using dynamic import
   async function initSupabase() {
     if (supabase) return supabase;
 
-    // Try window.supabase first, fallback to ESM import
-    if (window.supabase) {
-      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    } else {
+    try {
       const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
       supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      console.log('✓ Supabase client initialized');
+      return supabase;
+    } catch (err) {
+      console.error('✗ Failed to initialize Supabase:', err);
+      throw err;
     }
-    return supabase;
   }
 
   // ── Inventory ────────────────────────────────────────────────────────

@@ -303,26 +303,27 @@ exports.handler = async (event) => {
   </div>
 </div>
 
-<script async src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
   // Credentials injected from server
   const SUPABASE_URL = '${supabaseUrl}';
   const SUPABASE_ANON_KEY = '${supabaseKey}';
   const ADMIN_PASSWORD = '${adminPassword}';
 
-  // Initialize Supabase - will be set after CDN loads
+  // Initialize Supabase using dynamic import
   let supabase = null;
 
-  // Wait for Supabase library to load
   async function initSupabase() {
-    if (!window.supabase) {
-      // Try to load from the explicit ESM import
+    if (supabase) return supabase;
+
+    try {
       const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
       supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    } else {
-      supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      console.log('✓ Supabase initialized');
+      return supabase;
+    } catch (err) {
+      console.error('✗ Supabase init failed:', err);
+      throw err;
     }
-    return supabase;
   }
 
   let inventory = {};
