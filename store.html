@@ -670,12 +670,19 @@
     if (supabase) return supabase;
 
     try {
+      console.log('→ Attempting to import Supabase...');
       const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+      console.log('→ Creating Supabase client with URL:', SUPABASE_URL);
       supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      console.log('✓ Supabase client initialized');
+      console.log('✓ Supabase client initialized successfully');
       return supabase;
     } catch (err) {
       console.error('✗ Failed to initialize Supabase:', err);
+      console.error('Error details:', {
+        message: err.message,
+        stack: err.stack,
+        name: err.name
+      });
       throw err;
     }
   }

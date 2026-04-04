@@ -316,12 +316,19 @@ exports.handler = async (event) => {
     if (supabase) return supabase;
 
     try {
+      console.log('→ Attempting to import Supabase from CDN...');
       const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+      console.log('→ Creating Supabase client...');
       supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-      console.log('✓ Supabase initialized');
+      console.log('✓ Supabase initialized successfully');
       return supabase;
     } catch (err) {
       console.error('✗ Supabase init failed:', err);
+      console.error('Error details:', {
+        message: err.message,
+        stack: err.stack,
+        name: err.name
+      });
       throw err;
     }
   }
