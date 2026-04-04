@@ -310,8 +310,8 @@ exports.handler = async (event) => {
   const SUPABASE_ANON_KEY = '${supabaseKey}';
   const ADMIN_PASSWORD = '${adminPassword}';
 
-  const { createClient } = window.supabase;
-  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  // Use Supabase from window (already loaded by CDN)
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   let inventory = {};
   let isLoggedIn = false;
