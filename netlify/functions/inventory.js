@@ -347,14 +347,26 @@ exports.handler = async (event) => {
 
   async function handleLogin() {
     const password = document.getElementById('passwordInput').value;
+    const btn = document.querySelector('.login-box button');
+    btn.textContent = 'Signing in...';
+    btn.disabled = true;
+
     if (password === ADMIN_PASSWORD) {
       isLoggedIn = true;
       localStorage.setItem('caesarean_inventory_auth', 'true');
       showApp();
       await initializeApp();
     } else {
-      alert('Invalid password');
-      document.getElementById('passwordInput').value = '';
+      btn.textContent = 'Sign In';
+      btn.disabled = false;
+      const input = document.getElementById('passwordInput');
+      input.style.borderColor = '#c00000';
+      input.value = '';
+      input.placeholder = 'Incorrect password';
+      setTimeout(() => {
+        input.style.borderColor = '';
+        input.placeholder = 'Enter password';
+      }, 2000);
     }
   }
 
