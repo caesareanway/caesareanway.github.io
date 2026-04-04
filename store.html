@@ -800,11 +800,21 @@
     const format = size ? `${product.format} — ${size}` : product.format;
 
     const existing = cart.find(i => i.id === itemId);
+    const sku = size ? `shirt-${size}` : productId;
+    const availableStock = getStock(sku);
+    const cartQty = existing ? existing.qty : 0;
+
+    if (cartQty >= availableStock) {
+      alert(`Only ${availableStock} in stock`);
+      return;
+    }
+
     if (existing) {
       existing.qty++;
     } else {
       cart.push({ id: itemId, productId, name: label, format, price: product.price, qty: 1 });
     }
+    sold[sku] = (sold[sku] || 0) + 1;
 
     // Flash button
     const btn = document.getElementById(`add-${productId}`);
@@ -817,6 +827,20 @@
   }
 
   function changeQty(index, delta) {
+    const item = cart[index];
+    if (delta > 0) {
+      const sku = item.id;
+      const availableStock = INVENTORY[sku] || 0;
+      const totalInCart = cart.reduce((sum, i) => i.id === sku ? sum + i.qty : sum, 0);
+      if (totalInCart >= availableStock) {
+        alert(`Only ${availableStock} in stock`);
+        return;
+      }
+      sold[sku] = (sold[sku] || 0) + 1;
+    } else if (delta < 0) {
+      const sku = item.id;
+      sold[sku] = Math.max(0, (sold[sku] || 0) - 1);
+    }
     cart[index].qty += delta;
     if (cart[index].qty <= 0) cart.splice(index, 1);
     saveCart();

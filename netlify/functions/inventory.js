@@ -268,6 +268,7 @@ exports.handler = async (event) => {
     <h2>Inventory</h2>
     <input type="password" id="passwordInput" placeholder="Enter password" autocomplete="off">
     <button onclick="handleLogin()">Sign In</button>
+    <div id="loginError" style="color:#c00000;margin-top:12px;font-size:0.85rem;min-height:1.2em;"></div>
   </div>
 </div>
 
@@ -348,25 +349,24 @@ exports.handler = async (event) => {
   async function handleLogin() {
     const password = document.getElementById('passwordInput').value;
     const btn = document.querySelector('.login-box button');
+    const errorEl = document.getElementById('loginError');
+    console.log('Login attempt, password length:', password.length);
+    errorEl.textContent = '';
     btn.textContent = 'Signing in...';
     btn.disabled = true;
 
     if (password === ADMIN_PASSWORD) {
+      console.log('Password correct, logging in...');
       isLoggedIn = true;
       localStorage.setItem('caesarean_inventory_auth', 'true');
       showApp();
       await initializeApp();
     } else {
+      console.log('Password incorrect. Expected length:', ADMIN_PASSWORD.length);
       btn.textContent = 'Sign In';
       btn.disabled = false;
-      const input = document.getElementById('passwordInput');
-      input.style.borderColor = '#c00000';
-      input.value = '';
-      input.placeholder = 'Incorrect password';
-      setTimeout(() => {
-        input.style.borderColor = '';
-        input.placeholder = 'Enter password';
-      }, 2000);
+      errorEl.textContent = 'Incorrect password';
+      document.getElementById('passwordInput').value = '';
     }
   }
 
