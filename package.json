@@ -1,0 +1,9 @@
+{
+  "name": "caesarean-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "CAESAREAN band website with Stripe checkout",
+  "dependencies": {
+    "stripe": "^14.0.0"
+  }
+}

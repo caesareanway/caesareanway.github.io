@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="CAESAREAN — Order confirmed.">
+  <title>CAESAREAN — Order Confirmed</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" href="favicon.ico?v=2">
+  <link rel="apple-touch-icon" href="logo.png">
+  <script data-goatcounter="https://caesarean.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  <style>
+    .success-page {
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--nav-h) var(--gutter) 80px;
+    }
+
+    .success-inner {
+      max-width: 480px;
+      text-align: center;
+    }
+
+    .success-mark {
+      font-size: 2rem;
+      margin-bottom: 28px;
+      opacity: 0.5;
+    }
+
+    .success-heading {
+      font-family: var(--display);
+      font-size: clamp(3rem, 8vw, 5.5rem);
+      line-height: 0.92;
+      color: var(--fg);
+      margin-bottom: 20px;
+    }
+
+    .success-body {
+      font-size: 15px;
+      color: var(--fg-dim);
+      line-height: 1.75;
+      margin-bottom: 40px;
+    }
+
+    .success-links {
+      display: flex;
+      gap: 24px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .success-link {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--fg-dim);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 2px;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .success-link:hover {
+      color: var(--fg);
+      border-color: var(--fg-dim);
+    }
+
+    .success-link.primary {
+      color: var(--red);
+      border-color: var(--red);
+    }
+
+    .success-link.primary:hover { opacity: 0.75; }
+  </style>
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <nav class="nav-links" id="nav-links">
+    <a href="main.html">Music</a>
+    <a href="upcoming.html">Upcoming</a>
+    <a href="previous.html">Previous</a>
+    <a href="photos.html">Photos</a>
+    <a href="bio.html">Bio/Contact</a>
+    <a href="store.html">Store</a>
+    <a href="https://www.instagram.com/caesarean215/" target="_blank" rel="noopener noreferrer" class="nav-ig">Instagram ↗</a>
+  </nav>
+</header>
+
+<div class="success-page">
+  <div class="success-inner">
+    <div class="success-mark">✦</div>
+    <h1 class="success-heading">Order Confirmed</h1>
+    <p class="success-body">
+      Your order is in. You'll receive a confirmation email shortly.
+      <br>Allow 1–2 weeks for delivery. Questions?
+      <a href="mailto:contact.caesarean@gmail.com" style="color:inherit;border-bottom:1px solid var(--border)">contact.caesarean@gmail.com</a>
+    </p>
+    <div class="success-links">
+      <a href="store.html" class="success-link primary">Back to Store</a>
+      <a href="main.html" class="success-link">Music</a>
+      <a href="https://www.instagram.com/caesarean215/" target="_blank" rel="noopener noreferrer" class="success-link">Instagram ↗</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Clear cart on successful order
+  localStorage.removeItem('caesarean_cart');
+</script>
+
+</body>
+</html>

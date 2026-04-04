@@ -12,6 +12,31 @@
   <link rel="icon" href="favicon.ico?v=2">
   <link rel="apple-touch-icon" href="logo.png">
   <script data-goatcounter="https://caesarean.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+  <style>
+    /* Lightbox nav arrows */
+    .lightbox-nav {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 201;
+      background: none;
+      border: none;
+      color: var(--fg);
+      font-size: 2.8rem;
+      line-height: 1;
+      padding: 24px 20px;
+      cursor: pointer;
+      opacity: 0.3;
+      transition: opacity 0.2s;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .lightbox-nav:hover { opacity: 1; }
+    .lightbox-prev { left: 0; }
+    .lightbox-next { right: 0; }
+    .lightbox-nav[hidden] { display: none; }
+    #lightbox-img { transition: opacity 0.12s ease; }
+  </style>
 </head>
 <body>
 
@@ -22,6 +47,7 @@
     <a href="previous.html">Previous</a>
     <a href="photos.html" class="active">Photos</a>
     <a href="bio.html">Bio/Contact</a>
+    <a href="store.html">Store</a>
     <a href="https://www.instagram.com/caesarean215/" target="_blank" rel="noopener noreferrer" class="nav-ig">Instagram ↗</a>
   </nav>
   <button class="nav-toggle" id="nav-toggle" aria-label="Open menu">
@@ -122,35 +148,87 @@
 <!-- Lightbox -->
 <div class="lightbox" id="lightbox">
   <span class="lightbox-close" id="lightbox-close">Close</span>
+  <button class="lightbox-nav lightbox-prev" id="lightbox-prev" aria-label="Previous photo">&#8249;</button>
   <img src="" alt="" id="lightbox-img">
+  <button class="lightbox-nav lightbox-next" id="lightbox-next" aria-label="Next photo">&#8250;</button>
 </div>
 
 <script>
-  const toggle = document.getElementById('nav-toggle');
-  const navLinks = document.getElementById('nav-links');
-  toggle.addEventListener('click', () => navLinks.classList.toggle('open'));
-  navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => navLinks.classList.remove('open')));
+  // ── Lightbox ──────────────────────────────────────────────
+  const lightbox  = document.getElementById('lightbox');
+  const lbImg     = document.getElementById('lightbox-img');
+  const lbClose   = document.getElementById('lightbox-close');
+  const lbPrev    = document.getElementById('lightbox-prev');
+  const lbNext    = document.getElementById('lightbox-next');
 
-  // Lightbox
-  const lightbox = document.getElementById('lightbox');
-  const lbImg = document.getElementById('lightbox-img');
-  const lbClose = document.getElementById('lightbox-close');
+  // Build ordered photo list from the grid
+  const photos = Array.from(document.querySelectorAll('.photo-item')).map(el => el.dataset.src);
+  let currentIndex = 0;
 
-  document.querySelectorAll('.photo-item').forEach(item => {
-    item.addEventListener('click', () => {
-      lbImg.src = item.dataset.src;
-      lightbox.classList.add('open');
-    });
-  });
+  function updateNav() {
+    lbPrev.hidden = currentIndex === 0;
+    lbNext.hidden = currentIndex === photos.length - 1;
+  }
+
+  function openLightbox(index) {
+    currentIndex = index;
+    lbImg.src = photos[currentIndex];
+    lbImg.style.opacity = '1';
+    lightbox.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    updateNav();
+  }
 
   function closeLightbox() {
     lightbox.classList.remove('open');
     lbImg.src = '';
+    document.body.style.overflow = '';
   }
 
+  function navigate(delta) {
+    const next = currentIndex + delta;
+    if (next < 0 || next >= photos.length) return;
+    currentIndex = next;
+    lbImg.style.opacity = '0';
+    setTimeout(() => {
+      lbImg.src = photos[currentIndex];
+      lbImg.style.opacity = '1';
+      updateNav();
+    }, 120);
+  }
+
+  // Open on grid click
+  document.querySelectorAll('.photo-item').forEach((item, i) => {
+    item.addEventListener('click', () => openLightbox(i));
+  });
+
+  // Nav buttons — stop propagation so background-click-to-close doesn't fire
+  lbPrev.addEventListener('click', e => { e.stopPropagation(); navigate(-1); });
+  lbNext.addEventListener('click', e => { e.stopPropagation(); navigate(1); });
+
+  // Close on background or close button
   lbClose.addEventListener('click', closeLightbox);
   lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+  // Keyboard: arrows + escape
+  document.addEventListener('keydown', e => {
+    if (!lightbox.classList.contains('open')) return;
+    if (e.key === 'Escape')      closeLightbox();
+    if (e.key === 'ArrowLeft')   navigate(-1);
+    if (e.key === 'ArrowRight')  navigate(1);
+  });
+
+  // Touch swipe (mobile)
+  let touchStartX = 0;
+
+  lightbox.addEventListener('touchstart', e => {
+    touchStartX = e.touches[0].clientX;
+  }, { passive: true });
+
+  lightbox.addEventListener('touchend', e => {
+    const delta = touchStartX - e.changedTouches[0].clientX;
+    if (Math.abs(delta) > 50) navigate(delta > 0 ? 1 : -1);
+  }, { passive: true });
 </script>
 
 </body>

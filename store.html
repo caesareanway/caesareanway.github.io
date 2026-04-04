@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="CAESAREAN — Store and merch ordering.">
+  <meta name="description" content="CAESAREAN — Merch and physical media.">
   <title>CAESAREAN — Store</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,7 +11,499 @@
   <link rel="stylesheet" href="styles.css">
   <link rel="icon" href="favicon.ico?v=2">
   <link rel="apple-touch-icon" href="logo.png">
+  <script src="https://js.stripe.com/v3/"></script>
   <script data-goatcounter="https://caesarean.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+
+  <style>
+    /* ── Store page layout ── */
+    .store-page {
+      padding-top: calc(var(--nav-h) + 80px);
+      padding-bottom: 120px;
+    }
+
+    .store-note {
+      font-size: 14px;
+      color: var(--fg-dim);
+      margin-bottom: 64px;
+      max-width: 560px;
+      line-height: 1.7;
+    }
+
+    .store-note a {
+      color: var(--fg-dim);
+      border-bottom: 1px solid var(--border);
+      transition: color 0.15s;
+    }
+
+    .store-note a:hover { color: var(--fg); }
+
+    /* Product rows */
+    .product-list { display: flex; flex-direction: column; }
+
+    .product-row {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: clamp(40px, 5vw, 80px);
+      padding: 64px 0;
+      border-top: 1px solid var(--border);
+      align-items: start;
+    }
+
+    .product-row:last-child { border-bottom: 1px solid var(--border); }
+
+    .product-img-wrap img {
+      width: 100%;
+      display: block;
+    }
+
+    .product-img-placeholder {
+      width: 100%;
+      aspect-ratio: 1;
+      background: #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .product-img-placeholder svg {
+      width: 55%;
+      color: var(--fg-dim);
+      opacity: 0.18;
+    }
+
+    .product-tag {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--red);
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .product-row-name {
+      font-family: var(--display);
+      font-size: clamp(2.6rem, 4vw, 4rem);
+      line-height: 0.95;
+      color: var(--fg);
+      margin-bottom: 18px;
+    }
+
+    .product-row-price {
+      font-family: var(--display);
+      font-size: clamp(2.2rem, 3vw, 3rem);
+      color: var(--fg);
+      line-height: 1;
+      margin-bottom: 16px;
+    }
+
+    .product-row-desc {
+      font-size: 14px;
+      color: var(--fg-dim);
+      line-height: 1.75;
+      margin-bottom: 32px;
+      max-width: 440px;
+    }
+
+    /* Size select */
+    .size-select {
+      -webkit-appearance: none;
+      appearance: none;
+      background-color: var(--bg);
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%23888' d='M0 0l5 6 5-6z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      border: 1px solid var(--border);
+      color: var(--fg-dim);
+      font-family: var(--body);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      padding: 13px 40px 13px 16px;
+      width: 200px;
+      cursor: pointer;
+      display: block;
+      margin-bottom: 28px;
+      transition: border-color 0.15s, color 0.15s;
+    }
+
+    .size-select:focus { outline: none; border-color: var(--fg-dim); color: var(--fg); }
+    .size-select option { background: #111; }
+
+    /* Action buttons */
+    .product-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 320px;
+    }
+
+    .btn-add-cart {
+      display: block;
+      width: 100%;
+      padding: 15px 20px;
+      background: none;
+      border: 1px solid var(--fg-dim);
+      color: var(--fg);
+      font-family: var(--body);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+    }
+
+    .btn-add-cart:hover,
+    .btn-add-cart.added {
+      background: var(--fg);
+      color: var(--bg);
+      border-color: var(--fg);
+    }
+
+    .express-checkout-section { display: none; flex-direction: column; gap: 0; }
+    .express-checkout-section.visible { display: flex; }
+
+    .express-or {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--fg-dim);
+      text-align: center;
+      padding: 10px 0;
+      opacity: 0.5;
+    }
+
+    #pr-btn-cd,
+    #pr-btn-shirt { min-height: 48px; }
+
+    /* ── Cart button in nav ── */
+    .nav-cart {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-family: var(--body);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--fg-dim);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px 0;
+      margin-left: 28px;
+      flex-shrink: 0;
+      transition: color 0.15s;
+    }
+
+    .nav-cart:hover { color: var(--fg); }
+
+    .nav-cart-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--red);
+      color: #fff;
+      font-size: 9px;
+      font-weight: 700;
+      min-width: 18px;
+      height: 18px;
+      border-radius: 9px;
+      padding: 0 4px;
+      letter-spacing: 0;
+    }
+
+    /* ── Cart drawer ── */
+    .cart-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: 150;
+    }
+
+    .cart-overlay.open { display: block; }
+
+    .cart-drawer {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: min(420px, 100vw);
+      background: #111;
+      border-left: 1px solid var(--border);
+      z-index: 160;
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .cart-drawer.open { transform: translateX(0); }
+
+    .cart-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 22px 28px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .cart-header-title {
+      font-family: var(--display);
+      font-size: 1.7rem;
+      color: var(--fg);
+      letter-spacing: 0.04em;
+    }
+
+    .cart-close {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--fg-dim);
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: color 0.15s;
+      padding: 4px 0;
+    }
+
+    .cart-close:hover { color: var(--fg); }
+
+    .cart-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 28px;
+    }
+
+    .cart-empty {
+      padding: 40px 0;
+      font-size: 14px;
+      color: var(--fg-dim);
+    }
+
+    .cart-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border);
+      align-items: start;
+    }
+
+    .cart-item-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--fg);
+      margin-bottom: 3px;
+    }
+
+    .cart-item-meta {
+      font-size: 12px;
+      color: var(--fg-dim);
+      margin-bottom: 12px;
+    }
+
+    .cart-item-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .cart-qty-btn {
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--fg-dim);
+      cursor: pointer;
+      font-size: 15px;
+      line-height: 1;
+      transition: border-color 0.15s, color 0.15s;
+      flex-shrink: 0;
+    }
+
+    .cart-qty-btn:hover { border-color: var(--fg-dim); color: var(--fg); }
+
+    .cart-qty-num {
+      font-size: 13px;
+      color: var(--fg);
+      min-width: 16px;
+      text-align: center;
+    }
+
+    .cart-remove {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--fg-dim);
+      background: none;
+      border: none;
+      cursor: pointer;
+      margin-left: 4px;
+      transition: color 0.15s;
+      padding: 0;
+    }
+
+    .cart-remove:hover { color: var(--fg); }
+
+    .cart-item-price {
+      font-family: var(--display);
+      font-size: 1.5rem;
+      color: var(--fg);
+      text-align: right;
+      padding-top: 2px;
+    }
+
+    .cart-footer {
+      border-top: 1px solid var(--border);
+      padding: 20px 28px 28px;
+      flex-shrink: 0;
+    }
+
+    .cart-totals {
+      margin-bottom: 18px;
+    }
+
+    .cart-totals-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--fg-dim);
+      padding: 4px 0;
+    }
+
+    .cart-totals-row.total {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--fg);
+      border-top: 1px solid var(--border);
+      margin-top: 8px;
+      padding-top: 12px;
+    }
+
+    .btn-checkout {
+      display: block;
+      width: 100%;
+      padding: 17px 20px;
+      background: var(--red);
+      color: #fff;
+      font-family: var(--body);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .btn-checkout:hover { opacity: 0.85; }
+    .btn-checkout:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    /* Zoom modal */
+    .zoom-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.98);
+      z-index: 2000;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+    
+    .zoom-modal.active { display: flex; }
+    
+    .zoom-modal-content {
+      position: relative;
+      max-width: 100vw;
+      max-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .zoom-modal-image {
+      max-width: 100%;
+      max-height: 85vh;
+      object-fit: contain;
+      display: block;
+    }
+    
+    .zoom-modal-close {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      color: #000;
+      border: none;
+      width: 50px;
+      height: 50px;
+      font-size: 28px;
+      cursor: pointer;
+      border-radius: 2px;
+      font-weight: bold;
+      transition: background 0.2s;
+    }
+    
+    .zoom-modal-close:hover { background: #fff; }
+    
+    .zoom-modal-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      border: none;
+      padding: 16px 12px;
+      cursor: pointer;
+      font-size: 24px;
+      transition: background 0.2s;
+      border-radius: 2px;
+    }
+    
+    .zoom-modal-nav:hover { background: rgba(255, 255, 255, 0.4); }
+    .zoom-modal-nav.prev { left: 20px; }
+    .zoom-modal-nav.next { right: 20px; }
+    .zoom-modal-nav.hidden { display: none; }
+    
+    .zoom-modal-indicator {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 12px;
+      letter-spacing: 0.1em;
+    }
+    
+    .product-img-wrap { cursor: zoom-in; }
+
+    /* Mobile adjustments */
+    @media (max-width: 900px) {
+      .product-row {
+        grid-template-columns: 1fr;
+        gap: 28px;
+        padding: 48px 0;
+      }
+
+      .product-img-wrap { max-width: 260px; }
+      .product-actions { max-width: 100%; }
+      .size-select { width: 100%; max-width: 240px; }
+
+      .nav-cart { margin-left: 16px; }
+    }
+  </style>
 </head>
 <body>
 
@@ -22,90 +514,556 @@
     <a href="previous.html">Previous</a>
     <a href="photos.html">Photos</a>
     <a href="bio.html">Bio/Contact</a>
+    <a href="store.html" class="active">Store</a>
     <a href="https://www.instagram.com/caesarean215/" target="_blank" rel="noopener noreferrer" class="nav-ig">Instagram ↗</a>
   </nav>
-  <button class="nav-toggle" id="nav-toggle" aria-label="Open menu">
-    <svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  <button class="nav-cart" id="cart-btn" aria-label="Open cart">
+    Cart
+    <span class="nav-cart-count" id="cart-count" hidden>0</span>
   </button>
 </header>
 
+<!-- Cart overlay -->
+<div class="cart-overlay" id="cart-overlay"></div>
+
+<!-- Cart drawer -->
+<div class="cart-drawer" id="cart-drawer" aria-label="Shopping cart">
+  <div class="cart-header">
+    <span class="cart-header-title">Cart</span>
+    <button class="cart-close" id="cart-close">Close ✕</button>
+  </div>
+  <div class="cart-body">
+    <div id="cart-items">
+      <div class="cart-empty">Your cart is empty.</div>
+    </div>
+  </div>
+  <div class="cart-footer">
+    <div class="cart-totals">
+      <div class="cart-totals-row">
+        <span>Subtotal</span>
+        <span id="cart-subtotal">$0.00</span>
+      </div>
+      <div class="cart-totals-row">
+        <span>Shipping (US)</span>
+        <span>$5.00</span>
+      </div>
+      <div class="cart-totals-row total">
+        <span>Total</span>
+        <span id="cart-total">$5.00</span>
+      </div>
+    </div>
+    <button class="btn-checkout" id="btn-checkout" disabled>Checkout →</button>
+  </div>
+</div>
+
+<!-- Zoom modal -->
+<div class="zoom-modal" id="zoom-modal">
+  <div class="zoom-modal-content">
+    <img class="zoom-modal-image" id="zoom-modal-image" src="" alt="">
+    <button class="zoom-modal-nav prev" id="zoom-prev" onclick="zoomNav(-1)">‹</button>
+    <button class="zoom-modal-nav next" id="zoom-next" onclick="zoomNav(1)">›</button>
+    <button class="zoom-modal-close" onclick="closeZoom()">✕</button>
+    <div class="zoom-modal-indicator" id="zoom-indicator"></div>
+  </div>
+</div>
+
+<!-- Store page -->
 <div class="store-page">
   <div class="container">
 
     <h1 class="page-heading">Store</h1>
-    <p class="store-note">Shipping within the US. International orders — <a href="mailto:contact.caesarean@gmail.com">email us first</a>. Physical copies also available via <a href="https://shop.horrorpaingoredeath.com/collections/caesarean-wretched-decrepitude" target="_blank" rel="noopener noreferrer">HPGD Shop</a>.</p>
+    <p class="store-note">US shipping only — $5.00 flat rate. International orders? <a href="mailto:contact.caesarean@gmail.com">Email us first.</a> 
+      <br>More merch available at <a href="https://shop.horrorpaingoredeath.com/collections/caesarean-wretched-decrepitude" target="_blank" rel="noopener noreferrer">HPGD Shop →</a></p>
 
-    <div class="product-grid">
+    <div class="product-list">
 
-      <div class="product-card">
-        <img src="WD Cover Digital.png" alt="Wretched Decrepitude CD" class="product-img">
-        <div class="product-body">
-          <div class="product-name">Wretched Decrepitude — CD</div>
-          <div class="product-price">$8</div>
-          <div class="product-desc">Debut EP. Six tracks. Horror Pain Gore Death Productions, 2025.</div>
-          <a href="https://buy.stripe.com/REPLACE_WITH_CD_LINK" target="_blank" rel="noopener noreferrer" class="buy-btn">Order →</a>
+      <!-- CD -->
+      <div class="product-row">
+        <div class="product-img-wrap" onclick="openZoom('cd', 0)">
+          <img src="WD Cover Digital.png" alt="Wretched Decrepitude EP — CD cover art">
         </div>
-      </div>
-
-      <div class="product-card">
-        <div class="product-img-placeholder">Photo Coming</div>
-        <div class="product-body">
-          <div class="product-name">T-Shirt</div>
-          <div class="product-price">$20</div>
-          <div class="product-desc">Black. Printed in Philadelphia. Select size:</div>
-          <div class="size-row">
-            <a href="https://buy.stripe.com/REPLACE_SHIRT_S" target="_blank" rel="noopener noreferrer" class="size-link">S</a>
-            <a href="https://buy.stripe.com/REPLACE_SHIRT_M" target="_blank" rel="noopener noreferrer" class="size-link">M</a>
-            <a href="https://buy.stripe.com/REPLACE_SHIRT_L" target="_blank" rel="noopener noreferrer" class="size-link">L</a>
-            <a href="https://buy.stripe.com/REPLACE_SHIRT_XL" target="_blank" rel="noopener noreferrer" class="size-link">XL</a>
-            <a href="https://buy.stripe.com/REPLACE_SHIRT_XXL" target="_blank" rel="noopener noreferrer" class="size-link">XXL</a>
+        <div class="product-info">
+          <span class="product-tag">CD</span>
+          <div class="product-row-name">Wretched Decrepitude</div>
+          <div class="product-row-price">$10</div>
+          <p class="product-row-desc">
+            Debut EP. Six tracks of gore-soaked death metal. 
+            <br>Horror Pain Gore Death Productions, 2025.
+          </p>
+          <div class="product-actions">
+            <button class="btn-add-cart" id="add-cd" onclick="addToCart('cd')">Add to Cart</button>
+            <div class="express-checkout-section" id="express-cd">
+              <div class="express-or">— or —</div>
+              <div id="pr-btn-cd"></div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="product-card">
-        <div class="product-img-placeholder">Photo Coming</div>
-        <div class="product-body">
-          <div class="product-name">Koozie</div>
-          <div class="product-price">$5</div>
-          <div class="product-desc">Neoprene can koozie.</div>
-          <a href="https://buy.stripe.com/REPLACE_WITH_KOOZIE_LINK" target="_blank" rel="noopener noreferrer" class="buy-btn">Order →</a>
+      <!-- T-Shirt -->
+      <div class="product-row">
+        <div class="product-img-wrap" onclick="openZoom('shirt', 0)">
+          <div class="product-img-placeholder" style="position: relative; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 20px;">
+            <!-- Shirt carousel -->
+            <div style="position: relative; width: 100%; display: flex; align-items: center; justify-content: center;">
+              <img id="shirt-display" src="IMG_6504.jpeg" alt="Caesarean T-Shirt" style="width: 100%; max-width: 100%; display: block; border-radius: 2px; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+            </div>
+            
+            <!-- Toggle buttons -->
+            <div style="display: flex; gap: 10px; justify-content: center;">
+              <button onclick="event.stopPropagation(); showShirtSide('front')" id="btn-front" style="background: #fff; color: #000; border: none; padding: 8px 16px; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; cursor: pointer; border-radius: 2px; transition: all 0.2s; font-family: inherit;">FRONT</button>
+              <button onclick="event.stopPropagation(); showShirtSide('back')" id="btn-back" style="background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.3); padding: 8px 16px; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; cursor: pointer; border-radius: 2px; transition: all 0.2s; font-family: inherit;">BACK</button>
+            </div>
+          </div>
+        </div>
+        <div class="product-info">
+          <span class="product-tag">T-Shirt — Limited Stock</span>
+          <div class="product-row-name">Caesarean T-Shirt</div>
+          <div class="product-row-price">$15</div>
+          <p class="product-row-desc">
+            Black. Screen printed in Philadelphia. 
+            <br>Remaining sizes: XL, 2XL, 3XL.
+          </p>
+          <select class="size-select" id="shirt-size" onchange="onSizeChange()">
+            <option value="">Select Size</option>
+            <option value="XL">XL</option>
+            <option value="2XL">2XL</option>
+            <option value="3XL">3XL</option>
+          </select>
+          <div class="product-actions">
+            <button class="btn-add-cart" id="add-shirt" onclick="addToCart('shirt')">Add to Cart</button>
+            <div class="express-checkout-section" id="express-shirt">
+              <div class="express-or">— or —</div>
+              <div id="pr-btn-shirt"></div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="product-card">
-        <div class="product-img-placeholder">Photo Coming</div>
-        <div class="product-body">
-          <div class="product-name">Hat</div>
-          <div class="product-price">$25</div>
-          <div class="product-desc">Structured 6-panel. One size.</div>
-          <a href="https://buy.stripe.com/REPLACE_WITH_HAT_LINK" target="_blank" rel="noopener noreferrer" class="buy-btn">Order →</a>
-        </div>
-      </div>
-
-      <div class="product-card">
-        <img src="WD Cover Digital.png" alt="CD + Shirt Bundle" class="product-img">
-        <div class="product-body">
-          <div class="product-name">CD + Shirt Bundle</div>
-          <div class="product-price">$25</div>
-          <div class="product-desc">Wretched Decrepitude CD + shirt. Specify size at checkout.</div>
-          <a href="https://buy.stripe.com/REPLACE_WITH_BUNDLE_LINK" target="_blank" rel="noopener noreferrer" class="buy-btn">Order →</a>
-        </div>
-      </div>
-
-    </div>
-
-    <p class="store-note" style="margin-top:48px;">Questions: <a href="mailto:contact.caesarean@gmail.com">contact.caesarean@gmail.com</a></p>
+    </div><!-- /product-list -->
 
   </div>
 </div>
 
 <script>
-  const toggle = document.getElementById('nav-toggle');
-  const links = document.getElementById('nav-links');
-  toggle.addEventListener('click', () => links.classList.toggle('open'));
-  links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => links.classList.remove('open')));
-</script>
+  // ── Config ────────────────────────────────────────────────
+  // STEP 1: Replace with your Stripe publishable key after account setup
+  const STRIPE_PK = 'pk_live_51TIJeW7huAyLljRFr9QXZMZR2VQFxJV4OBt6upmIejiMAbONuS9Yz8d0IZcPsGExOg7wNNs6W7iWTtRvFnG17XOj00rSUKb4Dp';
 
-</body>
-</html>
+  const PRODUCTS = {
+    cd:    { name: 'Wretched Decrepitude EP', format: 'CD', price: 10.00 },
+    shirt: { name: 'Caesarean T-Shirt',       format: 'T-Shirt', price: 15.00 },
+  };
+
+  const SHIPPING = 5.00;
+
+  // ── Inventory ────────────────────────────────────────────────────────
+  const INVENTORY = {
+    'cd': 32,
+    'shirt-XL': 11,
+    'shirt-2XL': 3,
+    'shirt-3XL': 1
+  };
+
+  let sold = {
+    'cd': 0,
+    'shirt-XL': 0,
+    'shirt-2XL': 0,
+    'shirt-3XL': 0
+  };
+
+  function getStock(sku) {
+    return INVENTORY[sku] - (sold[sku] || 0);
+  }
+
+  function checkStock(productId, size) {
+    if (productId === 'cd') {
+      return getStock('cd') > 0;
+    } else if (productId === 'shirt') {
+      return getStock('shirt-' + size) > 0;
+    }
+    return false;
+  }
+
+  function updateStockDisplay() {
+    const cdBtn = document.getElementById('add-cd');
+    const shirtBtn = document.getElementById('add-shirt');
+    const shirtSize = document.getElementById('shirt-size').value;
+
+    if (getStock('cd') <= 0) {
+      cdBtn.disabled = true;
+      cdBtn.textContent = 'Out of Stock';
+      cdBtn.style.opacity = '0.5';
+    } else {
+      cdBtn.disabled = false;
+      cdBtn.textContent = 'Add to Cart';
+      cdBtn.style.opacity = '1';
+    }
+
+    if (!shirtSize || getStock('shirt-' + shirtSize) <= 0) {
+      shirtBtn.disabled = true;
+      if (shirtSize) shirtBtn.textContent = 'Out of Stock';
+    } else {
+      shirtBtn.disabled = false;
+      shirtBtn.textContent = 'Add to Cart';
+    }
+  }
+
+  // ── Cart state ────────────────────────────────────────────
+  let cart = JSON.parse(localStorage.getItem('caesarean_cart') || '[]');
+
+  function saveCart() {
+    localStorage.setItem('caesarean_cart', JSON.stringify(cart));
+    renderCart();
+  }
+
+  function addToCart(productId) {
+    const product = PRODUCTS[productId];
+    if (!product) return;
+
+    let size = null;
+    if (productId === 'shirt') {
+      size = document.getElementById('shirt-size').value;
+      if (!size) {
+        document.getElementById('shirt-size').style.borderColor = 'var(--red)';
+        document.getElementById('shirt-size').focus();
+        setTimeout(() => document.getElementById('shirt-size').style.borderColor = '', 1500);
+        return;
+      }
+      if (!checkStock(productId, size)) {
+        alert('Out of stock');
+        return;
+      }
+    } else if (!checkStock(productId)) {
+      alert('Out of stock');
+      return;
+    }
+
+    const itemId = size ? `${productId}-${size}` : productId;
+    const label  = size ? `${product.name} (${size})` : product.name;
+    const format = size ? `${product.format} — ${size}` : product.format;
+
+    const existing = cart.find(i => i.id === itemId);
+    if (existing) {
+      existing.qty++;
+    } else {
+      cart.push({ id: itemId, productId, name: label, format, price: product.price, qty: 1 });
+    }
+
+    // Flash button
+    const btn = document.getElementById(`add-${productId}`);
+    btn.textContent = '✓ Added';
+    btn.classList.add('added');
+    setTimeout(() => { btn.textContent = 'Add to Cart'; btn.classList.remove('added'); }, 1400);
+
+    saveCart();
+    openCart();
+  }
+
+  function changeQty(index, delta) {
+    cart[index].qty += delta;
+    if (cart[index].qty <= 0) cart.splice(index, 1);
+    saveCart();
+  }
+
+  function removeItem(index) {
+    cart.splice(index, 1);
+    saveCart();
+  }
+
+  function renderCart() {
+    const itemsEl   = document.getElementById('cart-items');
+    const countEl   = document.getElementById('cart-count');
+    const subtotalEl = document.getElementById('cart-subtotal');
+    const totalEl   = document.getElementById('cart-total');
+    const checkoutBtn = document.getElementById('btn-checkout');
+
+    const totalItems = cart.reduce((s, i) => s + i.qty, 0);
+    countEl.textContent = totalItems;
+    countEl.hidden = totalItems === 0;
+    checkoutBtn.disabled = totalItems === 0;
+
+    if (cart.length === 0) {
+      itemsEl.innerHTML = '<div class="cart-empty">Your cart is empty.</div>';
+      subtotalEl.textContent = '$0.00';
+      totalEl.textContent = `$${SHIPPING.toFixed(2)}`;
+      return;
+    }
+
+    itemsEl.innerHTML = cart.map((item, i) => `
+      <div class="cart-item">
+        <div>
+          <div class="cart-item-name">${item.name}</div>
+          <div class="cart-item-meta">${item.format}</div>
+          <div class="cart-item-controls">
+            <button class="cart-qty-btn" onclick="changeQty(${i}, -1)">−</button>
+            <span class="cart-qty-num">${item.qty}</span>
+            <button class="cart-qty-btn" onclick="changeQty(${i}, 1)">+</button>
+            <button class="cart-remove" onclick="removeItem(${i})">Remove</button>
+          </div>
+        </div>
+        <div class="cart-item-price">$${(item.price * item.qty).toFixed(2)}</div>
+      </div>
+    `).join('');
+
+    const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+    subtotalEl.textContent = `$${subtotal.toFixed(2)}`;
+    totalEl.textContent   = `$${(subtotal + SHIPPING).toFixed(2)}`;
+  }
+
+  // ── Cart open / close ─────────────────────────────────────
+  function openCart() {
+    document.getElementById('cart-drawer').classList.add('open');
+    document.getElementById('cart-overlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeCart() {
+    document.getElementById('cart-drawer').classList.remove('open');
+    document.getElementById('cart-overlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('cart-btn').addEventListener('click', openCart);
+  document.getElementById('cart-close').addEventListener('click', closeCart);
+  document.getElementById('cart-overlay').addEventListener('click', closeCart);
+
+  // ── Checkout (cart → Stripe Checkout) ────────────────────
+  document.getElementById('btn-checkout').addEventListener('click', async () => {
+    if (cart.length === 0) return;
+    const btn = document.getElementById('btn-checkout');
+    btn.disabled = true;
+    btn.textContent = 'Redirecting…';
+    try {
+      const res = await fetch('/.netlify/functions/create-checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: cart }),
+      });
+      const { url, error } = await res.json();
+      if (error) throw new Error(error);
+      window.location.href = url;
+    } catch (err) {
+      btn.disabled = false;
+      btn.textContent = 'Checkout →';
+      alert('One or more of the items in your cart is out of stock. Please update or email contact.caesarean@gmail.com.');
+    }
+  });
+
+  // ── Size change → reveal Apple Pay for shirt ──────────────
+  function onSizeChange() {
+    const size = document.getElementById('shirt-size').value;
+    const expressEl = document.getElementById('express-shirt');
+    if (size && stripeReady && shirtPaymentRequestReady) {
+      expressEl.classList.add('visible');
+    } else {
+      expressEl.classList.remove('visible');
+    }
+    updateStockDisplay();
+  }
+
+  // ── Stripe Payment Request (Apple Pay / Google Pay) ───────
+  let stripeReady = false;
+  let shirtPaymentRequestReady = false;
+
+  async function initStripe() {
+    if (STRIPE_PK.includes('REPLACE')) return; // No key yet — skip
+
+    let stripe;
+    try { stripe = Stripe(STRIPE_PK); }
+    catch (e) { return; }
+
+    // Helper: handle Apple Pay / Google Pay confirmation
+    async function handlePaymentMethod(ev, { amount, description, shippingAddress }) {
+      try {
+        const res = await fetch('/.netlify/functions/create-payment-intent', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ amount, description, shippingAddress }),
+        });
+        const { clientSecret, error: backendError } = await res.json();
+        if (backendError) { ev.complete('fail'); return; }
+
+        const { error } = await stripe.confirmCardPayment(
+          clientSecret,
+          { payment_method: ev.paymentMethod.id },
+          { handleActions: false }
+        );
+
+        if (error) { ev.complete('fail'); }
+        else       { ev.complete('success'); window.location.href = '/success.html'; }
+      } catch (_) {
+        ev.complete('fail');
+      }
+    }
+
+    const shippingOptions = [{
+      id: 'us-standard',
+      label: 'US Standard Shipping (5–7 days)',
+      amount: 500,
+    }];
+
+    // ── CD — $10 product + $5 shipping = $15 total ──────────
+    const prCD = stripe.paymentRequest({
+      country: 'US', currency: 'usd',
+      total: { label: 'Caesarean — Wretched Decrepitude EP (CD)', amount: 1500 },
+      requestShipping: true,
+      shippingOptions,
+    });
+
+    prCD.on('shippingaddresschange', ev => {
+      ev.updateWith({
+        status: ev.shippingAddress.country === 'US' ? 'success' : 'invalid_shipping_address',
+        shippingOptions,
+      });
+    });
+
+    prCD.on('paymentmethod', ev => handlePaymentMethod(ev, {
+      amount: 1500,
+      description: 'Caesarean - Wretched Decrepitude EP (CD)',
+      shippingAddress: ev.shippingAddress,
+    }));
+
+    const cdElements = stripe.elements();
+    const prBtnCD = cdElements.create('paymentRequestButton', {
+      paymentRequest: prCD,
+      style: { paymentRequestButton: { theme: 'light', height: '48px', type: 'buy' } },
+    });
+
+    const canCD = await prCD.canMakePayment();
+    if (canCD) {
+      prBtnCD.mount('#pr-btn-cd');
+      document.getElementById('express-cd').classList.add('visible');
+    }
+
+    // ── Shirt — $15 product + $5 shipping = $20 total ───────
+    const prShirt = stripe.paymentRequest({
+      country: 'US', currency: 'usd',
+      total: { label: 'Caesarean T-Shirt', amount: 2000 },
+      requestShipping: true,
+      shippingOptions,
+    });
+
+    prShirt.on('shippingaddresschange', ev => {
+      ev.updateWith({
+        status: ev.shippingAddress.country === 'US' ? 'success' : 'invalid_shipping_address',
+        shippingOptions,
+      });
+    });
+
+    prShirt.on('paymentmethod', ev => {
+      const size = document.getElementById('shirt-size').value || '?';
+      handlePaymentMethod(ev, {
+        amount: 2000,
+        description: `Caesarean T-Shirt (${size})`,
+        shippingAddress: ev.shippingAddress,
+      });
+    });
+
+    const shirtElements = stripe.elements();
+    const prBtnShirt = shirtElements.create('paymentRequestButton', {
+      paymentRequest: prShirt,
+      style: { paymentRequestButton: { theme: 'light', height: '48px', type: 'buy' } },
+    });
+
+    const canShirt = await prShirt.canMakePayment();
+    if (canShirt) {
+      prBtnShirt.mount('#pr-btn-shirt');
+      shirtPaymentRequestReady = true;
+      // Only show if size already selected
+      if (document.getElementById('shirt-size').value) {
+        document.getElementById('express-shirt').classList.add('visible');
+      }
+    }
+
+    stripeReady = true;
+  }
+
+  // ── Nav scroll behavior (mobile) ─────────────────────────
+  // Nav toggle script is not needed — mobile uses scrollable strip
+
+  // ── Init ─────────────────────────────────────────────────
+  renderCart();
+
+  // ── Zoom modal functionality ──────────────────────────────
+    let currentShirtSide = 'front';
+    let zoomState = { type: null, index: 0 };
+    const zoomImages = {
+      cd: ['WD Cover Digital.png'],
+      shirt: ['IMG_6504.jpeg', 'IMG_6505.jpeg']
+    };
+
+    function showShirtSide(side) {
+      currentShirtSide = side;
+      const img = document.getElementById('shirt-display');
+      const btnFront = document.getElementById('btn-front');
+      const btnBack = document.getElementById('btn-back');
+      
+      if (side === 'front') {
+        img.src = 'IMG_6504.jpeg';
+        zoomState.index = 0;
+        btnFront.style.background = '#fff';
+        btnFront.style.color = '#000';
+        btnBack.style.background = 'rgba(255,255,255,0.2)';
+        btnBack.style.color = '#fff';
+      } else {
+        img.src = 'IMG_6505.jpeg';
+        zoomState.index = 1;
+        btnBack.style.background = '#fff';
+        btnBack.style.color = '#000';
+        btnFront.style.background = 'rgba(255,255,255,0.2)';
+        btnFront.style.color = '#fff';
+      }
+    }
+
+    function openZoom(type, index) {
+      zoomState.type = type;
+      zoomState.index = index;
+      const modal = document.getElementById('zoom-modal');
+      const img = document.getElementById('zoom-modal-image');
+      const prevBtn = document.getElementById('zoom-prev');
+      const nextBtn = document.getElementById('zoom-next');
+      const indicator = document.getElementById('zoom-indicator');
+      
+      img.src = zoomImages[type][index];
+      
+      if (type === 'cd') {
+        prevBtn.classList.add('hidden');
+        nextBtn.classList.add('hidden');
+        indicator.textContent = '';
+      } else if (type === 'shirt') {
+        prevBtn.classList.remove('hidden');
+        nextBtn.classList.remove('hidden');
+        indicator.textContent = (index + 1) + ' / 2';
+      }
+      
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeZoom() {
+      document.getElementById('zoom-modal').classList.remove('active');
+      document.body.style.overflow = '';
+      zoomState.type = null;
+    }
+
+    function zoomNav(direction) {
+      if (!zoomState.type) return;
+      let newIndex = zoomState.index + direction;
+      const maxIndex = zoomImages[zoomState.type].length - 1;
+      if (newIndex < 0 || newIndex > maxIndex) return;
+      openZoom(zoomState.type, newIndex);
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && zoomState.type) closeZoom();
+    });
+
+    document.getElementById('zoom-modal').addEventListener('click', function(e) {
+      if (e.target === this) closeZoom();
+    });
+
+    // Initialize stock display on page load
+    updateStockDisplay();
+    initStripe();
+  </script>
