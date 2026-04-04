@@ -605,7 +605,7 @@
           <div class="product-img-placeholder" style="position: relative; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 20px;">
             <!-- Shirt carousel -->
             <div style="position: relative; width: 100%; display: flex; align-items: center; justify-content: center;">
-              <img id="shirt-display" src="IMG_6504.jpeg" alt="Caesarean T-Shirt" style="width: 100%; max-width: 100%; display: block; border-radius: 2px; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+              <img id="shirt-display" src="IMG_6504.jpeg" alt="T-Shirt" style="width: 100%; max-width: 100%; display: block; border-radius: 2px; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
             </div>
             
             <!-- Toggle buttons -->
@@ -617,7 +617,7 @@
         </div>
         <div class="product-info">
           <span class="product-tag">T-Shirt — Limited Stock</span>
-          <div class="product-row-name">Caesarean T-Shirt</div>
+          <div class="product-row-name">T-Shirt</div>
           <div class="product-row-price">$20</div>
           <p class="product-row-desc">
             Black. Screen printed by Optmistic Prints. 
@@ -655,7 +655,7 @@
 
   const PRODUCTS = {
     cd:    { name: 'Wretched Decrepitude EP', format: 'CD', price: 10.00 },
-    shirt: { name: 'Caesarean T-Shirt',       format: 'T-Shirt', price: 20.00 },
+    shirt: { name: 'T-Shirt',       format: 'T-Shirt', price: 20.00 },
   };
 
   const SHIPPING = 5.00;
@@ -943,7 +943,7 @@
     // ── Shirt — $20 product + $5 shipping = $25 total ───────
     const prShirt = stripe.paymentRequest({
       country: 'US', currency: 'usd',
-      total: { label: 'Caesarean T-Shirt', amount: 2500 },
+      total: { label: 'T-Shirt', amount: 2500 },
       requestShipping: true,
       shippingOptions,
     });
@@ -959,7 +959,7 @@
       const size = document.getElementById('shirt-size').value || '?';
       handlePaymentMethod(ev, {
         amount: 2500,
-        description: `Caesarean T-Shirt (${size})`,
+        description: `T-Shirt (${size})`,
         shippingAddress: ev.shippingAddress,
       });
     });
