@@ -74,7 +74,7 @@ exports.handler = async (event) => {
           const { data: currentData, error: fetchError } = await supabase
             .from('inventory')
             .select('quantity')
-            .eq('sku', sku)
+            .eq('product', sku)
             .single();
 
           if (fetchError) {
@@ -97,7 +97,7 @@ exports.handler = async (event) => {
               quantity: newQuantity,
               updated_at: new Date().toISOString(),
             })
-            .eq('sku', sku);
+            .eq('product', sku);
 
           if (updateError) {
             console.error(`Failed to update inventory for ${sku}:`, updateError);

@@ -696,14 +696,14 @@
       const client = await initSupabase();
       const { data, error } = await client
         .from('inventory')
-        .select('sku, quantity');
+        .select('product, quantity');
 
       if (error) throw error;
 
       // Map Supabase rows to INVENTORY object
       INVENTORY = {};
       data.forEach(row => {
-        INVENTORY[row.sku] = row.quantity;
+        INVENTORY[row.product] = row.quantity;
       });
 
       console.log('Inventory loaded from Supabase:', INVENTORY);
