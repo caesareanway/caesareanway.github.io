@@ -23,7 +23,6 @@
     X-Frame-Options        = "SAMEORIGIN"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy        = "strict-origin-when-cross-origin"
-    Content-Security-Policy = "default-src 'self'; script-src 'self' https://js.stripe.com https://cdn.jsdelivr.net https://gc.z00.at 'unsafe-inline' 'wasm-unsafe-eval'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; frame-src https://js.stripe.com https://checkout.stripe.com; connect-src 'self' https://*.supabase.co https://api.stripe.com https://checkout.stripe.com https://gc.z00.at; object-src 'none'; base-uri 'self'; form-action 'self'"
 
 # Cache static assets
 [[headers]]
