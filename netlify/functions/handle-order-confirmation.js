@@ -1,46 +1,56 @@
 // Netlify Function: Send order confirmation emails
-// Accepts order data via JSON POST and sends confirmation to admin + customer
+// Listens for checkout.session.completed webhook and sends confirmation to admin + customer
 
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'contact.caesarean@gmail.com';
+const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
-  // TODO: Re-enable Stripe webhook signature verification before production
-  // const signature = event.headers['stripe-signature'];
-  // try {
-  //   stripeEvent = stripe.webhooks.constructEvent(event.body, signature, webhookSecret);
-  // } catch (err) {
-  //   return { statusCode: 400, body: JSON.stringify({ error: 'Invalid signature' }) };
-  // }
+  // Stripe webhook signature verification (PRODUCTION ACTIVE)
+  const signature = event.headers['stripe-signature'];
+  let stripeEvent;
 
-  // Parse request body
-  let body;
   try {
-    body = JSON.parse(event.body);
+    stripeEvent = stripe.webhooks.constructEvent(
+      event.body,
+      signature,
+      webhookSecret
+    );
   } catch (err) {
-    console.error('Failed to parse request body:', err.message);
-    return { statusCode: 400, body: JSON.stringify({ error: 'Invalid JSON' }) };
+    console.error('Webhook signature verification failed:', err.message);
+    return { statusCode: 400, body: JSON.stringify({ error: 'Invalid signature' }) };
   }
 
+  // Extract body from validated Stripe event
+  const body = stripeEvent.data.object;
+
   try {
-    // Extract order data from request
-    const orderId = body.orderId;
-    const customerName = body.customerName || 'Customer';
-    const customerEmail = body.customerEmail;
-    const customerPhone = body.customerPhone || 'Not provided';
-    const items = body.items || []; // Array of {description, quantity, unit_amount}
-    const amountTotal = body.amountTotal; // Total in dollars
-    const shippingAddress = body.shippingAddress || {};
+    // Extract order data from Stripe session
+    const orderId = body.payment_intent;
+    const customerName = body.customer_details?.name || 'Customer';
+    const customerEmail = body.customer_details?.email;
+    const customerPhone = body.customer_details?.phone || 'Not provided';
+    const shippingAddress = body.shipping_details?.address || {};
+    const amountTotal = (body.amount_total / 100).toFixed(2); // Convert cents to dollars
 
     if (!customerEmail) {
       return { statusCode: 400, body: JSON.stringify({ error: 'Customer email required' }) };
     }
+
+    // Fetch line items from Stripe
+    const lineItems = await stripe.checkout.sessions.listLineItems(body.id);
+    const items = lineItems.data.map(item => ({
+      description: item.description,
+      quantity: item.quantity,
+      unit_amount: item.price.unit_amount
+    }));
 
     // Format item list
     const itemsFormatted = items
