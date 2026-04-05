@@ -63,7 +63,7 @@ exports.handler = async (event) => {
     // Email to admin
     const adminEmail = {
       to: ADMIN_EMAIL,
-      from: 'noreply@caesarean.band',
+      from: 'em8484@caesarean.org',
       subject: `New Order — ${itemsSimple}`,
       html: `
         <h2>New Order Received</h2>
@@ -90,7 +90,7 @@ exports.handler = async (event) => {
     // Email to customer
     const customerConfirmation = {
       to: customerEmail,
-      from: 'noreply@caesarean.band',
+      from: 'em8484@caesarean.org',
       subject: 'Order Confirmation — Caesarean',
       html: `
         <h2>Order Confirmed</h2>
