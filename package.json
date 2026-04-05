@@ -5,6 +5,7 @@
   "description": "CAESAREAN band website with Stripe checkout",
   "dependencies": {
     "stripe": "^14.0.0",
-    "@supabase/supabase-js": "^2.39.0"
+    "@supabase/supabase-js": "^2.39.0",
+    "@sendgrid/mail": "^7.7.0"
   }
 }
