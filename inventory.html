@@ -314,17 +314,42 @@
     const newQty = Math.max(0, current + delta);
     setStatus('Saving...', 'syncing');
     try {
-      const { error } = await supabase
+      // 1. Send update to Supabase
+      const { error: updateError } = await supabase
         .from('inventory')
         .update({ quantity: newQty, updated_at: new Date().toISOString() })
         .eq('product', product);
-      if (error) throw error;
-      inventory[product] = newQty;
+
+      if (updateError) throw updateError;
+
+      // 2. Fetch the current value from database to confirm
+      const { data: fetchedData, error: fetchError } = await supabase
+        .from('inventory')
+        .select('quantity')
+        .eq('product', product)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      // 3. Set inventory to the actual value from database
+      const confirmedQty = fetchedData?.quantity !== undefined ? fetchedData.quantity : newQty;
+      inventory[product] = confirmedQty;
+
+      console.log(`✓ Updated ${product}: ${confirmedQty}`);
+
+      // 4. Render and show confirmation
       renderInventory();
       const ts = document.getElementById('ts-' + product);
       if (ts) ts.textContent = 'Updated ' + new Date().toLocaleTimeString();
       setStatus('Saved', 'synced');
     } catch (err) {
+      // 5. Log error and show in UI
+      console.error(`✗ Failed to update ${product}:`, err);
+      console.error('Error details:', {
+        message: err.message,
+        code: err.code,
+        details: err.details
+      });
       setStatus('Save failed: ' + err.message, 'error');
     }
   }
