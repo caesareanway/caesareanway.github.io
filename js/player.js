@@ -198,7 +198,6 @@ window.onSpotifyWebPlaybackSDKReady = () => {
   player = new Spotify.Player({
     name: 'CAESAREAN Player',
     getOAuthToken: async callback => {
-      // Auto-refresh if token is close to expiry
       const expiresAt = parseInt(localStorage.getItem('spotify_token_expires') || '0');
       if (Date.now() > expiresAt - 60000) {
         const refreshed = await refreshAccessToken();
@@ -209,12 +208,30 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     volume: 0.5
   });
 
+  let connectionTimeout = setTimeout(() => {
+    console.error('Player connection timeout - no active Spotify app detected');
+    const container = document.getElementById('spotify-player');
+    if (container) {
+      container.innerHTML = `
+        <div class="player-auth">
+          <div class="auth-content">
+            <p style="color: #c00000; margin-bottom: 16px;">⚠ No active Spotify app found</p>
+            <p>Open Spotify on your phone, desktop, or <a href="https://open.spotify.com" target="_blank" rel="noopener noreferrer" style="color: #c00000; border-bottom: 1px solid #c00000;">spotify.com</a> and try again.</p>
+            <button onclick="location.reload()" style="background: #c00000; color: #0a0a0a; border: none; padding: 10px 20px; margin-top: 16px; cursor: pointer; font-weight: 600;">Retry</button>
+          </div>
+        </div>
+      `;
+    }
+  }, 8000);
+
   player.addListener('ready', ({ device_id }) => {
+    clearTimeout(connectionTimeout);
     deviceId = device_id;
     console.log('Player ready, device:', device_id);
   });
 
   player.addListener('player_state_changed', state => {
+    clearTimeout(connectionTimeout);
     if (!state) return;
     currentTrack = state.track_window.current_track;
     isPlaying = !state.paused;
@@ -224,16 +241,19 @@ window.onSpotifyWebPlaybackSDKReady = () => {
   });
 
   player.addListener('initialization_error', ({ message }) => {
+    clearTimeout(connectionTimeout);
     console.error('Initialization error:', message);
   });
 
   player.addListener('authentication_error', ({ message }) => {
+    clearTimeout(connectionTimeout);
     console.error('Authentication error:', message);
     clearSpotifyAuth();
     showAuthPrompt();
   });
 
   player.addListener('account_error', ({ message }) => {
+    clearTimeout(connectionTimeout);
     console.error('Account error:', message);
   });
 
