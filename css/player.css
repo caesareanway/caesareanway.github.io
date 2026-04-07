@@ -1,0 +1,421 @@
+/* ============================================================
+   SPOTIFY WEB PLAYBACK SDK PLAYER — Dark Industrial Aesthetic
+   Matches caesarean.org design: red accents, Bebas Neue, brutal styling
+   ============================================================ */
+
+/* Player Container */
+#spotify-player {
+  margin-top: 48px;
+  border-top: 1px solid var(--border);
+  padding-top: 32px;
+  padding-bottom: 16px;
+}
+
+/* ────────────────────────────────────────────────────────────
+   AUTHENTICATION STATE
+   ──────────────────────────────────────────────────────────── */
+
+.player-auth {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 280px;
+  padding: 48px 24px;
+}
+
+.auth-content {
+  text-align: center;
+  max-width: 380px;
+}
+
+.auth-content p {
+  font-size: 15px;
+  color: var(--fg-dim);
+  margin-bottom: 28px;
+  line-height: 1.6;
+}
+
+.auth-button {
+  display: inline-block;
+  background: var(--red);
+  color: var(--bg);
+  border: 2px solid var(--red);
+  padding: 14px 40px;
+  font-family: var(--body);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 24px;
+}
+
+.auth-button:hover {
+  background: transparent;
+  color: var(--red);
+}
+
+.auth-fallback {
+  font-size: 12px !important;
+  color: var(--fg-dim) !important;
+  margin-bottom: 0 !important;
+}
+
+.auth-fallback a {
+  color: var(--red);
+  text-decoration: none;
+  border-bottom: 1px solid var(--red);
+  transition: opacity 0.2s;
+}
+
+.auth-fallback a:hover {
+  opacity: 0.7;
+}
+
+/* ────────────────────────────────────────────────────────────
+   PLAYER CONTAINER
+   ──────────────────────────────────────────────────────────── */
+
+.player-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-height: 280px;
+  background: #050505;
+  border: 1px solid var(--red);
+  padding: 24px;
+}
+
+/* ────────────────────────────────────────────────────────────
+   TRACK INFO
+   ──────────────────────────────────────────────────────────── */
+
+.player-track-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 16px;
+}
+
+.player-track-name {
+  font-family: var(--display);
+  font-size: clamp(1.4rem, 2.5vw, 1.8rem);
+  line-height: 1.1;
+  color: var(--fg);
+  letter-spacing: 0.01em;
+  margin: 0;
+}
+
+.player-artist-name {
+  font-size: 14px;
+  color: var(--fg-dim);
+  letter-spacing: 0.02em;
+  margin: 0;
+}
+
+/* ────────────────────────────────────────────────────────────
+   PROGRESS BAR
+   ──────────────────────────────────────────────────────────── */
+
+.player-progress-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.player-progress-container {
+  width: 100%;
+  height: 4px;
+  background: var(--border);
+  cursor: pointer;
+  border: 1px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+.player-progress-container:hover {
+  border-color: var(--red);
+}
+
+.player-progress {
+  height: 100%;
+  background: var(--red);
+  width: 0%;
+  transition: width 0.1s linear;
+}
+
+.player-time {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--fg-dim);
+  letter-spacing: 0.05em;
+}
+
+/* ────────────────────────────────────────────────────────────
+   CONTROLS
+   ──────────────────────────────────────────────────────────── */
+
+.player-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.player-buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.player-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--fg-dim);
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+  transition: all 0.15s;
+  font-weight: 600;
+}
+
+.player-btn:hover {
+  color: var(--fg);
+  border-color: var(--fg-dim);
+}
+
+.player-btn[aria-pressed="true"] {
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.player-btn[aria-pressed="true"]:hover {
+  background: rgba(192, 0, 0, 0.1);
+}
+
+/* Volume control */
+.player-volume-control {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.volume-icon {
+  font-size: 14px;
+  color: var(--fg-dim);
+  width: 20px;
+  text-align: center;
+}
+
+.player-volume {
+  width: 100px;
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--border);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+/* Chrome/Edge slider track */
+.player-volume::-webkit-slider-track {
+  background: var(--border);
+  height: 4px;
+  border-radius: 2px;
+}
+
+/* Chrome/Edge slider thumb */
+.player-volume::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  background: var(--red);
+  cursor: pointer;
+  border-radius: 50%;
+  border: 1px solid var(--red);
+}
+
+.player-volume::-webkit-slider-thumb:hover {
+  box-shadow: 0 0 8px rgba(192, 0, 0, 0.4);
+}
+
+/* Firefox slider track */
+.player-volume::-moz-range-track {
+  background: var(--border);
+  height: 4px;
+  border-radius: 2px;
+  border: none;
+}
+
+/* Firefox slider thumb */
+.player-volume::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  background: var(--red);
+  cursor: pointer;
+  border-radius: 50%;
+  border: 1px solid var(--red);
+}
+
+.player-volume::-moz-range-thumb:hover {
+  box-shadow: 0 0 8px rgba(192, 0, 0, 0.4);
+}
+
+/* ────────────────────────────────────────────────────────────
+   PLAY ALBUM BUTTON
+   ──────────────────────────────────────────────────────────── */
+
+.player-play-album {
+  width: 100%;
+  background: var(--red);
+  color: var(--bg);
+  border: 2px solid var(--red);
+  padding: 12px 20px;
+  font-family: var(--body);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 8px;
+}
+
+.player-play-album:hover {
+  background: transparent;
+  color: var(--red);
+}
+
+/* ────────────────────────────────────────────────────────────
+   RESPONSIVE DESIGN
+   ──────────────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .player-wrapper {
+    border: 1px solid var(--red);
+    padding: 20px;
+    gap: 16px;
+  }
+
+  .player-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .player-buttons {
+    width: 100%;
+    justify-content: space-around;
+  }
+
+  .player-volume-control {
+    width: 100%;
+    gap: 12px;
+  }
+
+  .player-volume {
+    flex: 1;
+  }
+
+  .player-track-name {
+    font-size: clamp(1.2rem, 4vw, 1.6rem);
+  }
+
+  .player-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+
+  .player-play-album {
+    padding: 10px 16px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .player-wrapper {
+    padding: 16px;
+    gap: 14px;
+  }
+
+  .player-track-name {
+    font-size: clamp(1rem, 3vw, 1.4rem);
+  }
+
+  .player-artist-name {
+    font-size: 12px;
+  }
+
+  .player-btn {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+  }
+
+  .player-volume-control {
+    gap: 10px;
+  }
+
+  .player-volume {
+    width: 80px;
+  }
+
+  .player-time {
+    font-size: 10px;
+  }
+
+  .player-progress-container {
+    height: 3px;
+  }
+}
+
+/* ────────────────────────────────────────────────────────────
+   ACCESSIBILITY
+   ──────────────────────────────────────────────────────────── */
+
+.player-btn:focus-visible,
+.auth-button:focus-visible,
+.player-play-album:focus-visible,
+.player-volume:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: more) {
+  .player-wrapper {
+    border: 2px solid var(--red);
+  }
+
+  .player-btn {
+    border-width: 2px;
+  }
+
+  .player-progress-container {
+    border-width: 2px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .player-btn,
+  .auth-button,
+  .player-play-album,
+  .player-volume,
+  .player-progress,
+  .auth-fallback a {
+    transition: none;
+  }
+}

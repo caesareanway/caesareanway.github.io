@@ -4,6 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>CAESAREAN — Inventory</title>
+
+  <!-- iPhone home screen -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="CAESAREAN">
+  <link rel="apple-touch-icon" href="assets/images/head_icon.png">
+
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -157,8 +164,8 @@
 <div class="login-screen" id="loginScreen">
   <div class="login-box">
     <h2>Inventory</h2>
-    <input type="password" id="passwordInput" placeholder="Enter password" autocomplete="current-password">
-    <button id="loginBtn" onclick="handleLogin()">Sign In</button>
+    <input type="password" id="passwordInput" placeholder="Enter passphrase" autocomplete="current-password">
+    <button id="loginBtn">Sign In</button>
     <div class="login-error" id="loginError"></div>
   </div>
 </div>
@@ -186,55 +193,69 @@
   const SUPABASE_URL = 'https://hgrhtrwgrauwjguahvjv.supabase.co';
   const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhncmh0cndncmF1d2pndWFodmp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyNzk4MDgsImV4cCI6MjA5MDg1NTgwOH0.0ywVMVVYqwQxehNDFRsPs2PYRVBrndZxz6ZnYl6g1b0';
 
-  // SHA-256 hash of the admin password — password itself is never stored here
-  // To generate: run in browser console: hashPassword('yourpassword').then(console.log)
-  // Current hash is for the INVENTORY_PASSWORD value in your Netlify env vars
-  const PASSWORD_HASH = '8825e76530f87ff5c737b3254c6936bc0a90bba3a10a91bbba739268208d378a';
+  // ── Session management (localStorage, 2-year expiry) ──────────
+  const SESSION_KEY = 'inv_session';
+  const TWO_YEARS_MS = 2 * 365 * 24 * 60 * 60 * 1000;
 
-  let supabase = null;
-  let inventory = {};
-
-  async function hashPassword(password) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(password);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  function isSessionValid() {
+    try {
+      const session = JSON.parse(localStorage.getItem(SESSION_KEY) || 'null');
+      return session && session.token && session.expiresAt > Date.now();
+    } catch {
+      return false;
+    }
   }
 
-  async function initSupabase() {
-    if (supabase) return supabase;
-    const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
-    supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    return supabase;
+  function saveSession(token) {
+    localStorage.setItem(SESSION_KEY, JSON.stringify({
+      token,
+      expiresAt: Date.now() + TWO_YEARS_MS
+    }));
   }
 
+  function clearSession() {
+    localStorage.removeItem(SESSION_KEY);
+  }
+
+  // ── Auth ──────────────────────────────────────────────────────
   async function handleLogin() {
-    const password = document.getElementById('passwordInput').value;
+    const passphrase = document.getElementById('passwordInput').value;
     const btn = document.getElementById('loginBtn');
     const errorEl = document.getElementById('loginError');
 
-    if (!password) return;
+    if (!passphrase) return;
 
     btn.textContent = 'Signing in...';
     btn.disabled = true;
     errorEl.textContent = '';
 
-    const hash = await hashPassword(password);
+    try {
+      const res = await fetch('/.netlify/functions/validate-passphrase', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ passphrase })
+      });
 
-    if (hash === PASSWORD_HASH) {
-      sessionStorage.setItem('inv_auth', hash);
-      showApp();
-    } else {
+      const data = await res.json();
+
+      if (data.success) {
+        saveSession(data.token);
+        showApp();
+      } else {
+        btn.textContent = 'Sign In';
+        btn.disabled = false;
+        errorEl.textContent = 'Incorrect passphrase';
+        document.getElementById('passwordInput').value = '';
+      }
+    } catch (err) {
       btn.textContent = 'Sign In';
       btn.disabled = false;
-      errorEl.textContent = 'Incorrect password';
-      document.getElementById('passwordInput').value = '';
+      errorEl.textContent = 'Connection error. Try again.';
     }
   }
 
   function handleLogout() {
-    sessionStorage.removeItem('inv_auth');
+    clearSession();
     location.reload();
   }
 
@@ -242,6 +263,17 @@
     document.getElementById('loginScreen').classList.add('hidden');
     document.getElementById('appScreen').classList.add('visible');
     initializeApp();
+  }
+
+  // ── Supabase ──────────────────────────────────────────────────
+  let supabase = null;
+  let inventory = {};
+
+  async function initSupabase() {
+    if (supabase) return supabase;
+    const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
+    supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    return supabase;
   }
 
   async function initializeApp() {
@@ -314,7 +346,6 @@
     const newQty = Math.max(0, current + delta);
     setStatus('Saving...', 'syncing');
     try {
-      // 1. Send update to Supabase
       const { error: updateError } = await supabase
         .from('inventory')
         .update({ quantity: newQty, updated_at: new Date().toISOString() })
@@ -322,7 +353,6 @@
 
       if (updateError) throw updateError;
 
-      // 2. Fetch the current value from database to confirm
       const { data: fetchedData, error: fetchError } = await supabase
         .from('inventory')
         .select('quantity')
@@ -331,25 +361,17 @@
 
       if (fetchError) throw fetchError;
 
-      // 3. Set inventory to the actual value from database
       const confirmedQty = fetchedData?.quantity !== undefined ? fetchedData.quantity : newQty;
       inventory[product] = confirmedQty;
 
       console.log(`✓ Updated ${product}: ${confirmedQty}`);
 
-      // 4. Render and show confirmation
       renderInventory();
       const ts = document.getElementById('ts-' + product);
       if (ts) ts.textContent = 'Updated ' + new Date().toLocaleTimeString();
       setStatus('Saved', 'synced');
     } catch (err) {
-      // 5. Log error and show in UI
       console.error(`✗ Failed to update ${product}:`, err);
-      console.error('Error details:', {
-        message: err.message,
-        code: err.code,
-        details: err.details
-      });
       setStatus('Save failed: ' + err.message, 'error');
     }
   }
@@ -364,13 +386,14 @@
     document.getElementById('lastSynced').textContent = new Date().toLocaleTimeString();
   }
 
-  // Allow Enter key on login
+  // ── Event listeners ───────────────────────────────────────────
+  document.getElementById('loginBtn').addEventListener('click', handleLogin);
   document.getElementById('passwordInput').addEventListener('keydown', e => {
     if (e.key === 'Enter') handleLogin();
   });
 
-  // Resume session if already authenticated this session
-  if (sessionStorage.getItem('inv_auth') === PASSWORD_HASH && PASSWORD_HASH !== '__REPLACE_WITH_HASH__') {
+  // ── Boot: skip login if valid session exists ──────────────────
+  if (isSessionValid()) {
     showApp();
   }
 </script>
