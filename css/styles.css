@@ -584,7 +584,7 @@ body.splash::before {
 }
 
 .signup-message.success {
-  color: #5dd95d;
+  color: var(--fg);
 }
 
 .signup-message.error {

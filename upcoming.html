@@ -124,7 +124,7 @@
       const data = await res.json();
 
       if (data.success) {
-        btn.textContent = 'Thanks!';
+        btn.textContent = 'Thanks';
         form.querySelector('input[type="email"]').value = '';
         setTimeout(() => {
           btn.textContent = originalText;
