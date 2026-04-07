@@ -37,13 +37,14 @@
 
     <div class="show-list">
 
-      <div class="show-item">
+      <div class="show-item" data-show-date="2026-05-21">
         <div class="show-date-col">
           <div class="show-date">May 21</div>
           <div class="show-day">Thursday &mdash; 2026</div>
+          <div class="show-countdown"></div>
         </div>
         <div class="show-details">
-          <div class="show-venue">Nikki Lopez</div>
+          <a href="https://www.ticketweb.com/event/witchvomit-torture-rack-nikki-lopez-philly-tickets/14747393" target="_blank" rel="noopener noreferrer" class="show-venue">Nikki Lopez</a>
           <div class="show-info">
             Philadelphia, PA &middot; 21 &amp; Over<br>
             w/ <a href="https://www.metal-archives.com/bands/Witch_Vomit/3540363162" target="_blank" rel="noopener noreferrer"><strong>Witch Vomit</strong></a>,
@@ -60,13 +61,14 @@
         </div>
       </div>
 
-      <div class="show-item">
+      <div class="show-item" data-show-date="2026-07-15">
         <div class="show-date-col">
           <div class="show-date">Jul 15</div>
           <div class="show-day">Wednesday &mdash; 2026</div>
+          <div class="show-countdown"></div>
         </div>
         <div class="show-details">
-          <div class="show-venue">Broken Goblet Brewing</div>
+          <a href="https://www.brokengoblet.com/event-details/six-feet-under-kataklysm-decades-in-the-grave-tour" target="_blank" rel="noopener noreferrer" class="show-venue">Broken Goblet Brewing</a>
           <div class="show-info">
             Bensalem, PA<br>
             w/ <a href="https://www.metal-archives.com/bands/Six_Feet_Under/1067" target="_blank" rel="noopener noreferrer"><strong>Six Feet Under</strong></a>,
@@ -85,6 +87,14 @@
 
     </div>
 
+    <div class="shows-signup-cta">
+      <p>Get notified when new dates are announced.</p>
+      <form class="signup-form-inline" onsubmit="handleShowsSignup(event)">
+        <input type="email" placeholder="your@email.com" required>
+        <button type="submit">Notify Me</button>
+      </form>
+    </div>
+
   </div>
 </div>
 
@@ -93,6 +103,69 @@
   const links = document.getElementById('nav-links');
   toggle.addEventListener('click', () => links.classList.toggle('open'));
   links.querySelectorAll('a').forEach(a => a.addEventListener('click', () => links.classList.remove('open')));
+
+  async function handleShowsSignup(e) {
+    e.preventDefault();
+    const form = e.target;
+    const email = form.querySelector('input[type="email"]').value;
+    const btn = form.querySelector('button');
+
+    btn.disabled = true;
+    const originalText = btn.textContent;
+    btn.textContent = 'Subscribing...';
+
+    try {
+      const res = await fetch('/.netlify/functions/signup-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, source: 'shows_page' })
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        btn.textContent = 'Thanks!';
+        form.querySelector('input[type="email"]').value = '';
+        setTimeout(() => {
+          btn.textContent = originalText;
+          btn.disabled = false;
+        }, 3000);
+      } else {
+        btn.textContent = 'Error';
+        setTimeout(() => {
+          btn.textContent = originalText;
+          btn.disabled = false;
+        }, 3000);
+      }
+    } catch (err) {
+      btn.textContent = 'Error';
+      setTimeout(() => {
+        btn.textContent = originalText;
+        btn.disabled = false;
+      }, 3000);
+    }
+  }
+
+  // Show countdowns
+  function updateCountdowns() {
+    document.querySelectorAll('.show-item[data-show-date]').forEach(item => {
+      const dateStr = item.getAttribute('data-show-date');
+      const showDate = new Date(dateStr + 'T23:59:59').getTime();
+      const now = Date.now();
+      const daysUntil = Math.ceil((showDate - now) / (1000 * 60 * 60 * 24));
+
+      const countdown = item.querySelector('.show-countdown');
+      if (daysUntil > 0) {
+        countdown.textContent = daysUntil === 1 ? '🕐 Tomorrow' : `🕐 ${daysUntil} days`;
+      } else if (daysUntil === 0) {
+        countdown.textContent = '🕐 Today';
+      } else {
+        countdown.textContent = '';
+      }
+    });
+  }
+
+  updateCountdowns();
 </script>
 
 </body>

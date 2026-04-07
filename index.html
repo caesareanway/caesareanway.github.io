@@ -14,19 +14,73 @@
   <script data-goatcounter="https://caesarean.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </head>
 <body class="splash">
-  <!-- entire page is one big click -->
-  <a href="main.html" class="splash-wrapper" aria-label="Enter Caesarean">
-    <div class="splash-logo">
+  <!-- entire page is one big click, but form breaks the link -->
+  <div class="splash-wrapper">
+    <a href="main.html" class="splash-logo" aria-label="Enter Caesarean">
       <img src="assets/images/logo.png" alt="Caesarean">
-    </div>
-    <p class="splash-tagline">
+    </a>
+    <a href="main.html" class="splash-tagline" aria-label="Enter Caesarean">
       <span>Philadelphia</span>
       <span>Imperial</span>
       <span>Metal</span>
       <span>Devastation</span>
-    </p>
+    </a>
+
+    <form id="splashSignupForm" class="splash-signup">
+      <label for="splashEmail" class="splash-signup-label">Get notified</label>
+      <div class="splash-signup-input">
+        <input type="email" id="splashEmail" placeholder="your@email.com" required>
+        <button type="submit" aria-label="Sign up for updates">→</button>
+      </div>
+      <div id="splashSignupMsg" class="splash-signup-msg"></div>
+    </form>
+
     <div class="splash-divider"></div>
-    <span class="splash-enter">Enter</span>
-  </a>
+    <a href="main.html" class="splash-enter">Enter</a>
+  </div>
+
+  <script>
+    document.getElementById('splashSignupForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('splashEmail').value;
+      const btn = e.target.querySelector('button');
+      const msg = document.getElementById('splashSignupMsg');
+
+      btn.disabled = true;
+      const originalText = btn.textContent;
+
+      try {
+        const res = await fetch('/.netlify/functions/signup-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, source: 'splash' })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          msg.textContent = '✓ Thanks';
+          msg.classList.add('success');
+          document.getElementById('splashEmail').value = '';
+          setTimeout(() => {
+            btn.disabled = false;
+            btn.textContent = originalText;
+            msg.textContent = '';
+            msg.classList.remove('success');
+          }, 3000);
+        } else {
+          msg.textContent = 'Error';
+          msg.classList.add('error');
+          btn.disabled = false;
+          btn.textContent = originalText;
+        }
+      } catch (err) {
+        msg.textContent = 'Error';
+        msg.classList.add('error');
+        btn.disabled = false;
+        btn.textContent = originalText;
+      }
+    });
+  </script>
 </body>
 </html>

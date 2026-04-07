@@ -166,8 +166,9 @@
   let currentIndex = 0;
 
   function updateNav() {
-    lbPrev.hidden = currentIndex === 0;
-    lbNext.hidden = currentIndex === photos.length - 1;
+    // Always show nav buttons since we now loop
+    lbPrev.hidden = false;
+    lbNext.hidden = false;
   }
 
   function openLightbox(index) {
@@ -186,9 +187,7 @@
   }
 
   function navigate(delta) {
-    const next = currentIndex + delta;
-    if (next < 0 || next >= photos.length) return;
-    currentIndex = next;
+    currentIndex = (currentIndex + delta + photos.length) % photos.length;
     lbImg.style.opacity = '0';
     setTimeout(() => {
       lbImg.src = photos[currentIndex];

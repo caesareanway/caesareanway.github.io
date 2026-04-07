@@ -582,7 +582,10 @@
           <img src="assets/images/WD Cover Digital.png" alt="Wretched Decrepitude EP — CD cover art">
         </div>
         <div class="product-info">
-          <span class="product-tag">CD</span>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+            <span class="product-tag">CD</span>
+            <span class="stock-badge" id="cd-stock" style="display: none;"></span>
+          </div>
           <div class="product-row-name">Wretched Decrepitude</div>
           <div class="product-row-price">$10</div>
           <p class="product-row-desc">
@@ -616,7 +619,10 @@
           </div>
         </div>
         <div class="product-info">
-          <span class="product-tag">T-Shirt — Limited Stock</span>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+            <span class="product-tag">T-Shirt</span>
+            <span class="stock-badge" id="shirt-stock" style="display: none;"></span>
+          </div>
           <div class="product-row-name">T-Shirt</div>
           <div class="product-row-price">$20</div>
           <p class="product-row-desc">
@@ -744,16 +750,43 @@
     const cdBtn = document.getElementById('add-cd');
     const shirtBtn = document.getElementById('add-shirt');
     const shirtSize = document.getElementById('shirt-size').value;
+    const cdStock = getStock('cd');
+    const cdBadge = document.getElementById('cd-stock');
+    const shirtBadge = document.getElementById('shirt-stock');
 
-    if (getStock('cd') <= 0) {
+    // CD stock
+    if (cdStock <= 0) {
       cdBtn.disabled = true;
       cdBtn.textContent = 'Out of Stock';
       cdBtn.style.opacity = '0.5';
+      cdBadge.style.display = 'none';
     } else {
       cdBtn.disabled = false;
       cdBtn.textContent = 'Add to Cart';
       cdBtn.style.opacity = '1';
+      if (cdStock < 5) {
+        cdBadge.textContent = `Only ${cdStock} left`;
+        cdBadge.style.display = 'inline-block';
+      } else {
+        cdBadge.style.display = 'none';
+      }
     }
+
+    // Shirt stock - update size options to show stock
+    const shirtSizeSelect = document.getElementById('shirt-size');
+    const options = shirtSizeSelect.querySelectorAll('option[value]');
+    options.forEach(opt => {
+      const size = opt.value;
+      const stock = getStock('shirt-' + size);
+      opt.textContent = stock < 5 ? `${size} (${stock} left)` : size;
+    });
+
+    // Shirt button state
+    const minShirtStock = Math.min(
+      getStock('shirt-XL'),
+      getStock('shirt-2XL'),
+      getStock('shirt-3XL')
+    );
 
     if (!shirtSize || getStock('shirt-' + shirtSize) <= 0) {
       shirtBtn.disabled = true;
@@ -761,6 +794,17 @@
     } else {
       shirtBtn.disabled = false;
       shirtBtn.textContent = 'Add to Cart';
+    }
+
+    // Shirt badge - show if ANY size is under 5
+    if (minShirtStock > 0 && minShirtStock < 5) {
+      shirtBadge.textContent = 'Limited Stock';
+      shirtBadge.style.display = 'inline-block';
+    } else if (minShirtStock <= 0) {
+      shirtBadge.textContent = 'Out of Stock';
+      shirtBadge.style.display = 'inline-block';
+    } else {
+      shirtBadge.style.display = 'none';
     }
   }
 

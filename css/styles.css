@@ -170,6 +170,9 @@ body.splash {
 .splash-logo {
   margin-bottom: 40px;
   animation: splash-logo-pulse 5s ease-in-out infinite;
+  display: block;
+  text-decoration: none;
+  color: inherit;
 }
 
 @keyframes splash-logo-pulse {
@@ -195,6 +198,8 @@ body.splash {
   text-transform: uppercase;
   color: var(--fg-dim);
   margin-bottom: 36px;
+  display: block;
+  text-decoration: none;
 }
 
 .splash-tagline span {
@@ -215,6 +220,91 @@ body.splash {
   height: 40px;
   background: var(--border);
   margin: 0 auto 28px;
+}
+
+/* Email signup on splash */
+.splash-signup {
+  margin-bottom: 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.splash-signup-label {
+  font-family: var(--body);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+}
+
+.splash-signup-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 4px;
+  transition: border-color 0.25s;
+}
+
+.splash-signup-input:focus-within {
+  border-color: var(--fg-dim);
+}
+
+.splash-signup-input input {
+  background: none;
+  border: none;
+  color: var(--fg);
+  font-family: var(--body);
+  font-size: 11px;
+  width: 140px;
+  outline: none;
+  padding: 0;
+}
+
+.splash-signup-input input::placeholder {
+  color: var(--fg-dim);
+  opacity: 0.5;
+}
+
+.splash-signup-input button {
+  background: none;
+  border: none;
+  color: var(--fg-dim);
+  font-family: var(--body);
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0;
+  padding-left: 4px;
+  transition: color 0.25s;
+}
+
+.splash-signup-input button:hover:not(:disabled) {
+  color: var(--fg);
+}
+
+.splash-signup-input button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.splash-signup-msg {
+  font-family: var(--body);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  height: 12px;
+  min-width: 60px;
+  text-align: center;
+}
+
+.splash-signup-msg.success {
+  color: var(--fg);
+}
+
+.splash-signup-msg.error {
+  color: var(--red);
 }
 
 .splash-enter {
@@ -425,17 +515,81 @@ body.splash::before {
 
 /* album-note link styling now handled in DESKTOP/MOBILE LINK STYLING section */
 
-/* Spotify embed */
-.spotify-wrap {
+/* Email signup */
+.email-signup {
   margin-top: 48px;
-  border-top: 1px solid var(--border);
   padding-top: 32px;
+  border-top: 1px solid var(--border);
 }
 
-.spotify-wrap iframe {
-  display: block;
-  width: 100%;
-  border: 0;
+.signup-description {
+  font-size: 14px;
+  color: var(--fg-dim);
+  margin-bottom: 16px;
+  line-height: 1.6;
+}
+
+.signup-form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.signup-form input {
+  flex: 1;
+  background: #111;
+  border: 1px solid var(--border);
+  color: var(--fg);
+  padding: 10px 12px;
+  font-size: 13px;
+  font-family: var(--body);
+  transition: border-color 0.15s;
+}
+
+.signup-form input:focus {
+  outline: none;
+  border-color: var(--fg-dim);
+}
+
+.signup-form input::placeholder {
+  color: #555;
+}
+
+.signup-form button {
+  background: var(--red);
+  border: none;
+  color: var(--bg);
+  padding: 10px 24px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-family: var(--body);
+  transition: opacity 0.2s;
+}
+
+.signup-form button:hover {
+  opacity: 0.85;
+}
+
+.signup-form button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.signup-message {
+  font-size: 12px;
+  min-height: 1.4em;
+  line-height: 1.4;
+}
+
+.signup-message.success {
+  color: #5dd95d;
+}
+
+.signup-message.error {
+  color: #c00000;
 }
 
 /* ============================================================
@@ -588,6 +742,14 @@ body.splash::before {
   margin-top: 6px;
 }
 
+.show-countdown {
+  font-size: 11px;
+  color: var(--red);
+  margin-top: 8px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
 .show-venue {
   font-family: var(--display);
   font-size: clamp(1.6rem, 2.5vw, 2.2rem);
@@ -665,6 +827,69 @@ body.splash::before {
   font-size: clamp(2rem, 4vw, 3.5rem);
   color: var(--fg-dim);
   line-height: 1.1;
+}
+
+.shows-signup-cta {
+  margin-top: 64px;
+  padding-top: 48px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+
+.shows-signup-cta p {
+  font-size: 14px;
+  color: var(--fg-dim);
+  margin-bottom: 20px;
+}
+
+.signup-form-inline {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.signup-form-inline input {
+  background: #111;
+  border: 1px solid var(--border);
+  color: var(--fg);
+  padding: 10px 12px;
+  font-size: 13px;
+  font-family: var(--body);
+  width: 220px;
+  transition: border-color 0.15s;
+}
+
+.signup-form-inline input:focus {
+  outline: none;
+  border-color: var(--fg-dim);
+}
+
+.signup-form-inline input::placeholder {
+  color: #555;
+}
+
+.signup-form-inline button {
+  background: var(--red);
+  border: none;
+  color: var(--bg);
+  padding: 10px 20px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-family: var(--body);
+  transition: opacity 0.2s;
+}
+
+.signup-form-inline button:hover {
+  opacity: 0.85;
+}
+
+.signup-form-inline button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* ============================================================
@@ -1085,6 +1310,19 @@ body.splash::before {
 
 .buy-btn:hover {
   opacity: 0.7;
+}
+
+.stock-badge {
+  display: inline-block;
+  background: var(--red);
+  color: var(--bg);
+  padding: 4px 10px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 2px;
+  white-space: nowrap;
 }
 
 /* ============================================================
