@@ -77,15 +77,16 @@
       letter-spacing: 0.22em;
       text-transform: uppercase;
       color: var(--red);
-      display: block;
-      margin-bottom: 10px;
+      display: inline-block;
+      white-space: nowrap;
     }
 
     .product-row-name {
       font-family: var(--display);
-      font-size: clamp(2.6rem, 4vw, 4rem);
+      font-size: clamp(1.8rem, 2.8vw, 2.4rem);
       line-height: 0.95;
-      color: var(--fg);
+      color: var(--fg-dim);
+      font-weight: 400;
       margin-bottom: 18px;
     }
 
@@ -176,7 +177,8 @@
     }
 
     #pr-btn-cd,
-    #pr-btn-shirt { min-height: 48px; }
+    #pr-btn-head,
+    #pr-btn-eagle { min-height: 48px; }
 
     /* ── Cart button in nav ── */
     .nav-cart {
@@ -582,7 +584,7 @@
           <img src="assets/images/WD Cover Digital.png" alt="Wretched Decrepitude EP — CD cover art">
         </div>
         <div class="product-info">
-          <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+          <div style="display: flex; align-items: center; gap: 12px;">
             <span class="product-tag">CD</span>
             <span class="stock-badge" id="cd-stock" style="display: none;"></span>
           </div>
@@ -602,43 +604,88 @@
         </div>
       </div>
 
-      <!-- T-Shirt -->
+      <!-- Head -->
       <div class="product-row">
-        <div class="product-img-wrap" onclick="openZoom('shirt', 0)">
+        <div class="product-img-wrap" onclick="openZoom('head', 0)">
           <div class="product-img-placeholder" style="position: relative; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 20px;">
-            <!-- Shirt carousel -->
+            <!-- Head carousel -->
             <div style="position: relative; width: 100%; display: flex; align-items: center; justify-content: center;">
-              <img id="shirt-display" src="assets/images/IMG_6504.jpeg" alt="T-Shirt" style="width: 100%; max-width: 100%; display: block; border-radius: 2px; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+              <img id="head-display" src="assets/images/IMG_6504.jpeg" alt="Head" style="width: 100%; max-width: 100%; display: block; border-radius: 2px; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
             </div>
-            
+
             <!-- Toggle buttons -->
             <div style="display: flex; gap: 10px; justify-content: center;">
-              <button onclick="event.stopPropagation(); showShirtSide('front')" id="btn-front" style="background: #fff; color: #000; border: none; padding: 8px 16px; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; cursor: pointer; border-radius: 2px; transition: all 0.2s; font-family: inherit;">FRONT</button>
-              <button onclick="event.stopPropagation(); showShirtSide('back')" id="btn-back" style="background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.3); padding: 8px 16px; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; cursor: pointer; border-radius: 2px; transition: all 0.2s; font-family: inherit;">BACK</button>
+              <button onclick="event.stopPropagation(); showProductSide('head', 'front')" id="btn-head-front" style="background: #fff; color: #000; border: none; padding: 8px 16px; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; cursor: pointer; border-radius: 2px; transition: all 0.2s; font-family: inherit;">FRONT</button>
+              <button onclick="event.stopPropagation(); showProductSide('head', 'back')" id="btn-head-back" style="background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.3); padding: 8px 16px; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; cursor: pointer; border-radius: 2px; transition: all 0.2s; font-family: inherit;">BACK</button>
             </div>
           </div>
         </div>
         <div class="product-info">
-          <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+          <div style="display: flex; align-items: center; gap: 12px; justify-content: space-between;">
             <span class="product-tag">T-Shirt</span>
-            <span class="stock-badge" id="shirt-stock" style="display: none;"></span>
+            <span class="stock-badge" id="head-stock" style="display: none;"></span>
           </div>
-          <div class="product-row-name">T-Shirt</div>
+          <div class="product-row-name">Head</div>
           <div class="product-row-price">$20</div>
           <p class="product-row-desc">
             Black. Screen printed by <a href="https://www.instagram.com/optimisticprintsusa/" target="_blank" rel="noopener noreferrer">Optimistic Prints</a>.
           </p>
-          <select class="size-select" id="shirt-size" onchange="onSizeChange()">
+          <select class="size-select" id="head-size" onchange="onSizeChange('head')">
             <option value="">Select Size</option>
             <option value="XL">XL</option>
             <option value="2XL">2XL</option>
             <option value="3XL">3XL</option>
           </select>
           <div class="product-actions">
-            <button class="btn-add-cart" id="add-shirt" onclick="addToCart('shirt')">Add to Cart</button>
-            <div class="express-checkout-section" id="express-shirt">
+            <button class="btn-add-cart" id="add-head" onclick="addToCart('head')">Add to Cart</button>
+            <div class="express-checkout-section" id="express-head">
               <div class="express-or">— or —</div>
-              <div id="pr-btn-shirt"></div>
+              <div id="pr-btn-head"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Eagle -->
+      <div class="product-row">
+        <div class="product-img-wrap" onclick="openZoom('eagle', 0)">
+          <div class="product-img-placeholder" style="position: relative; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 20px;">
+            <!-- Eagle carousel -->
+            <div style="position: relative; width: 100%; display: flex; align-items: center; justify-content: center;">
+              <img id="eagle-display" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500'%3E%3Crect fill='%23111' width='400' height='500'/%3E%3Ctext x='200' y='250' font-size='24' fill='%23666' text-anchor='middle' dominant-baseline='middle'%3EEagle Shirt Image%3C/text%3E%3Ctext x='200' y='280' font-size='16' fill='%23555' text-anchor='middle' dominant-baseline='middle'%3EFront%3C/text%3E%3C/svg%3E" alt="Eagle" style="width: 100%; max-width: 100%; display: block; border-radius: 2px; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+            </div>
+
+            <!-- Toggle buttons -->
+            <div style="display: flex; gap: 10px; justify-content: center;">
+              <button onclick="event.stopPropagation(); showProductSide('eagle', 'front')" id="btn-eagle-front" style="background: #fff; color: #000; border: none; padding: 8px 16px; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; cursor: pointer; border-radius: 2px; transition: all 0.2s; font-family: inherit;">FRONT</button>
+              <button onclick="event.stopPropagation(); showProductSide('eagle', 'back')" id="btn-eagle-back" style="background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.3); padding: 8px 16px; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; cursor: pointer; border-radius: 2px; transition: all 0.2s; font-family: inherit;">BACK</button>
+            </div>
+          </div>
+        </div>
+        <div class="product-info">
+          <div style="display: flex; align-items: center; gap: 12px; justify-content: space-between;">
+            <span class="product-tag">T-Shirt</span>
+            <span class="stock-badge" id="eagle-stock" style="display: none;"></span>
+          </div>
+          <div class="product-row-name">Eagle</div>
+          <div class="product-row-price">$20</div>
+          <p class="product-row-desc">
+            Black. Screen printed by <a href="https://www.instagram.com/optimisticprintsusa/" target="_blank" rel="noopener noreferrer">Optimistic Prints</a>.
+          </p>
+          <select class="size-select" id="eagle-size" onchange="onSizeChange('eagle')">
+            <option value="">Select Size</option>
+            <option value="S">S</option>
+            <option value="M">M</option>
+            <option value="L">L</option>
+            <option value="XL">XL</option>
+            <option value="XXL">XXL</option>
+            <option value="XXXL">XXXL</option>
+          </select>
+          <div class="product-actions">
+            <button class="btn-add-cart" id="add-eagle" onclick="addToCart('eagle')">Add to Cart</button>
+            <div class="express-checkout-section" id="express-eagle">
+              <div class="express-or">— or —</div>
+              <div id="pr-btn-eagle"></div>
             </div>
           </div>
         </div>
@@ -660,7 +707,8 @@
 
   const PRODUCTS = {
     cd:    { name: 'Wretched Decrepitude EP', format: 'CD', price: 10.00 },
-    shirt: { name: 'T-Shirt',       format: 'T-Shirt', price: 20.00 },
+    head:  { name: 'Head',          format: 'T-Shirt', price: 20.00 },
+    eagle: { name: 'Eagle',         format: 'T-Shirt', price: 20.00 },
   };
 
   const SHIPPING = 5.00;
@@ -718,9 +766,15 @@
       // Fallback to hardcoded values if Supabase fails
       INVENTORY = {
         'cd': 32,
-        'shirt-XL': 11,
-        'shirt-2XL': 3,
-        'shirt-3XL': 1
+        'head-shirt-XL': 11,
+        'head-shirt-2XL': 3,
+        'head-shirt-3XL': 1,
+        'eagle-shirt-S': 7,
+        'eagle-shirt-M': 8,
+        'eagle-shirt-L': 12,
+        'eagle-shirt-XL': 12,
+        'eagle-shirt-XXL': 6,
+        'eagle-shirt-XXXL': 5
       };
       updateStockDisplay();
     }
@@ -728,9 +782,15 @@
 
   let sold = {
     'cd': 0,
-    'shirt-XL': 0,
-    'shirt-2XL': 0,
-    'shirt-3XL': 0
+    'head-shirt-XL': 0,
+    'head-shirt-2XL': 0,
+    'head-shirt-3XL': 0,
+    'eagle-shirt-S': 0,
+    'eagle-shirt-M': 0,
+    'eagle-shirt-L': 0,
+    'eagle-shirt-XL': 0,
+    'eagle-shirt-XXL': 0,
+    'eagle-shirt-XXXL': 0
   };
 
   function getStock(sku) {
@@ -740,21 +800,17 @@
   function checkStock(productId, size) {
     if (productId === 'cd') {
       return getStock('cd') > 0;
-    } else if (productId === 'shirt') {
-      return getStock('shirt-' + size) > 0;
+    } else if (productId === 'head' || productId === 'eagle') {
+      return getStock(productId + '-' + size) > 0;
     }
     return false;
   }
 
   function updateStockDisplay() {
+    // CD
     const cdBtn = document.getElementById('add-cd');
-    const shirtBtn = document.getElementById('add-shirt');
-    const shirtSize = document.getElementById('shirt-size').value;
     const cdStock = getStock('cd');
     const cdBadge = document.getElementById('cd-stock');
-    const shirtBadge = document.getElementById('shirt-stock');
-
-    // CD stock
     if (cdStock <= 0) {
       cdBtn.disabled = true;
       cdBtn.textContent = 'Out of Stock';
@@ -772,39 +828,46 @@
       }
     }
 
-    // Shirt stock - update size options to show stock
-    const shirtSizeSelect = document.getElementById('shirt-size');
-    const options = shirtSizeSelect.querySelectorAll('option[value]');
+    // Head shirt
+    updateShirtStockDisplay('head', ['XL', '2XL', '3XL']);
+
+    // Eagle shirt
+    updateShirtStockDisplay('eagle', ['S', 'M', 'L', 'XL', 'XXL', 'XXXL']);
+  }
+
+  function updateShirtStockDisplay(shirtId, sizes) {
+    const sizeSelect = document.getElementById(shirtId + '-size');
+    const btn = document.getElementById('add-' + shirtId);
+    const badge = document.getElementById(shirtId + '-stock');
+    const currentSize = sizeSelect.value;
+
+    // Update size options to show stock
+    const options = sizeSelect.querySelectorAll('option[value]');
     options.forEach(opt => {
       const size = opt.value;
-      const stock = getStock('shirt-' + size);
+      const stock = getStock(shirtId + '-shirt-' + size);
       opt.textContent = stock < 5 ? `${size} (${stock} left)` : size;
     });
 
-    // Shirt button state
-    const minShirtStock = Math.min(
-      getStock('shirt-XL'),
-      getStock('shirt-2XL'),
-      getStock('shirt-3XL')
-    );
-
-    if (!shirtSize || getStock('shirt-' + shirtSize) <= 0) {
-      shirtBtn.disabled = true;
-      if (shirtSize) shirtBtn.textContent = 'Out of Stock';
+    // Button state
+    if (!currentSize || getStock(shirtId + '-shirt-' + currentSize) <= 0) {
+      btn.disabled = true;
+      if (currentSize) btn.textContent = 'Out of Stock';
     } else {
-      shirtBtn.disabled = false;
-      shirtBtn.textContent = 'Add to Cart';
+      btn.disabled = false;
+      btn.textContent = 'Add to Cart';
     }
 
-    // Shirt badge - show if ANY size is under 5
-    if (minShirtStock > 0 && minShirtStock < 5) {
-      shirtBadge.textContent = 'Limited Stock';
-      shirtBadge.style.display = 'inline-block';
-    } else if (minShirtStock <= 0) {
-      shirtBadge.textContent = 'Out of Stock';
-      shirtBadge.style.display = 'inline-block';
+    // Badge - show if ANY size is under 5
+    const minStock = Math.min(...sizes.map(size => getStock(shirtId + '-shirt-' + size)));
+    if (minStock > 0 && minStock < 5) {
+      badge.textContent = 'Limited Stock';
+      badge.style.display = 'inline-block';
+    } else if (minStock <= 0) {
+      badge.textContent = 'Out of Stock';
+      badge.style.display = 'inline-block';
     } else {
-      shirtBadge.style.display = 'none';
+      badge.style.display = 'none';
     }
   }
 
@@ -821,12 +884,12 @@
     if (!product) return;
 
     let size = null;
-    if (productId === 'shirt') {
-      size = document.getElementById('shirt-size').value;
+    if (productId === 'head' || productId === 'eagle') {
+      size = document.getElementById(productId + '-size').value;
       if (!size) {
-        document.getElementById('shirt-size').style.borderColor = 'var(--red)';
-        document.getElementById('shirt-size').focus();
-        setTimeout(() => document.getElementById('shirt-size').style.borderColor = '', 1500);
+        document.getElementById(productId + '-size').style.borderColor = 'var(--red)';
+        document.getElementById(productId + '-size').focus();
+        setTimeout(() => document.getElementById(productId + '-size').style.borderColor = '', 1500);
         return;
       }
       if (!checkStock(productId, size)) {
@@ -843,7 +906,7 @@
     const format = size ? `${product.format} — ${size}` : product.format;
 
     const existing = cart.find(i => i.id === itemId);
-    const sku = size ? `shirt-${size}` : productId;
+    const sku = size ? `${productId}-shirt-${size}` : productId;
     const availableStock = getStock(sku);
     const cartQty = existing ? existing.qty : 0;
 
@@ -974,11 +1037,12 @@
     }
   });
 
-  // ── Size change → reveal Apple Pay for shirt ──────────────
-  function onSizeChange() {
-    const size = document.getElementById('shirt-size').value;
-    const expressEl = document.getElementById('express-shirt');
-    if (size && stripeReady && shirtPaymentRequestReady) {
+  // ── Size change → reveal Apple Pay for shirts ──────────────
+  function onSizeChange(shirtId) {
+    const size = document.getElementById(shirtId + '-size').value;
+    const expressEl = document.getElementById('express-' + shirtId);
+    const readyKey = shirtId + 'PaymentRequestReady';
+    if (size && stripeReady && window[readyKey]) {
       expressEl.classList.add('visible');
     } else {
       expressEl.classList.remove('visible');
@@ -988,7 +1052,8 @@
 
   // ── Stripe Payment Request (Apple Pay / Google Pay) ───────
   let stripeReady = false;
-  let shirtPaymentRequestReady = false;
+  let headPaymentRequestReady = false;
+  let eaglePaymentRequestReady = false;
 
   async function initStripe() {
     if (STRIPE_PK.includes('REPLACE')) return; // No key yet — skip
@@ -1060,43 +1125,81 @@
       document.getElementById('express-cd').classList.add('visible');
     }
 
-    // ── Shirt — $20 product + $5 shipping = $25 total ───────
-    const prShirt = stripe.paymentRequest({
+    // ── Head — $20 product + $5 shipping = $25 total ─────────
+    const prHead = stripe.paymentRequest({
       country: 'US', currency: 'usd',
-      total: { label: 'T-Shirt', amount: 2500 },
+      total: { label: 'Head', amount: 2500 },
       requestShipping: true,
       shippingOptions,
     });
 
-    prShirt.on('shippingaddresschange', ev => {
+    prHead.on('shippingaddresschange', ev => {
       ev.updateWith({
         status: ev.shippingAddress.country === 'US' ? 'success' : 'invalid_shipping_address',
         shippingOptions,
       });
     });
 
-    prShirt.on('paymentmethod', ev => {
-      const size = document.getElementById('shirt-size').value || '?';
+    prHead.on('paymentmethod', ev => {
+      const size = document.getElementById('head-size').value || '?';
       handlePaymentMethod(ev, {
         amount: 2500,
-        description: `T-Shirt (${size})`,
+        description: `Head (${size})`,
         shippingAddress: ev.shippingAddress,
       });
     });
 
-    const shirtElements = stripe.elements();
-    const prBtnShirt = shirtElements.create('paymentRequestButton', {
-      paymentRequest: prShirt,
+    const headElements = stripe.elements();
+    const prBtnHead = headElements.create('paymentRequestButton', {
+      paymentRequest: prHead,
       style: { paymentRequestButton: { theme: 'light', height: '48px', type: 'buy' } },
     });
 
-    const canShirt = await prShirt.canMakePayment();
-    if (canShirt) {
-      prBtnShirt.mount('#pr-btn-shirt');
-      shirtPaymentRequestReady = true;
-      // Only show if size already selected
-      if (document.getElementById('shirt-size').value) {
-        document.getElementById('express-shirt').classList.add('visible');
+    const canHead = await prHead.canMakePayment();
+    if (canHead) {
+      prBtnHead.mount('#pr-btn-head');
+      headPaymentRequestReady = true;
+      if (document.getElementById('head-size').value) {
+        document.getElementById('express-head').classList.add('visible');
+      }
+    }
+
+    // ── Eagle — $20 product + $5 shipping = $25 total ────────
+    const prEagle = stripe.paymentRequest({
+      country: 'US', currency: 'usd',
+      total: { label: 'Eagle', amount: 2500 },
+      requestShipping: true,
+      shippingOptions,
+    });
+
+    prEagle.on('shippingaddresschange', ev => {
+      ev.updateWith({
+        status: ev.shippingAddress.country === 'US' ? 'success' : 'invalid_shipping_address',
+        shippingOptions,
+      });
+    });
+
+    prEagle.on('paymentmethod', ev => {
+      const size = document.getElementById('eagle-size').value || '?';
+      handlePaymentMethod(ev, {
+        amount: 2500,
+        description: `Eagle (${size})`,
+        shippingAddress: ev.shippingAddress,
+      });
+    });
+
+    const eagleElements = stripe.elements();
+    const prBtnEagle = eagleElements.create('paymentRequestButton', {
+      paymentRequest: prEagle,
+      style: { paymentRequestButton: { theme: 'light', height: '48px', type: 'buy' } },
+    });
+
+    const canEagle = await prEagle.canMakePayment();
+    if (canEagle) {
+      prBtnEagle.mount('#pr-btn-eagle');
+      eaglePaymentRequestReady = true;
+      if (document.getElementById('eagle-size').value) {
+        document.getElementById('express-eagle').classList.add('visible');
       }
     }
 
@@ -1110,28 +1213,27 @@
   renderCart();
 
   // ── Zoom modal functionality ──────────────────────────────
-    let currentShirtSide = 'front';
     let zoomState = { type: null, index: 0 };
     const zoomImages = {
       cd: ['assets/images/WD Cover Digital.png'],
-      shirt: ['assets/images/IMG_6504.jpeg', 'assets/images/IMG_6505.jpeg']
+      head: ['assets/images/IMG_6504.jpeg', 'assets/images/IMG_6505.jpeg'],
+      eagle: ['placeholder.png', 'placeholder.png']
     };
 
-    function showShirtSide(side) {
-      currentShirtSide = side;
-      const img = document.getElementById('shirt-display');
-      const btnFront = document.getElementById('btn-front');
-      const btnBack = document.getElementById('btn-back');
-      
+    function showProductSide(productId, side) {
+      const img = document.getElementById(productId + '-display');
+      const btnFront = document.getElementById('btn-' + productId + '-front');
+      const btnBack = document.getElementById('btn-' + productId + '-back');
+
       if (side === 'front') {
-        img.src = 'assets/images/IMG_6504.jpeg';
+        img.src = zoomImages[productId][0];
         zoomState.index = 0;
         btnFront.style.background = '#fff';
         btnFront.style.color = '#000';
         btnBack.style.background = 'rgba(255,255,255,0.2)';
         btnBack.style.color = '#fff';
       } else {
-        img.src = 'assets/images/IMG_6505.jpeg';
+        img.src = zoomImages[productId][1];
         zoomState.index = 1;
         btnBack.style.background = '#fff';
         btnBack.style.color = '#000';
@@ -1155,7 +1257,7 @@
         prevBtn.classList.add('hidden');
         nextBtn.classList.add('hidden');
         indicator.textContent = '';
-      } else if (type === 'shirt') {
+      } else if (type === 'head' || type === 'eagle') {
         prevBtn.classList.remove('hidden');
         nextBtn.classList.remove('hidden');
         indicator.textContent = (index + 1) + ' / 2';
@@ -1190,5 +1292,3 @@
     // Load inventory from Supabase on page load
     loadInventory();
   </script>
-
-    // In
