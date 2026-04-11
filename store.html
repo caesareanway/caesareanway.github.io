@@ -1193,7 +1193,9 @@
       if (!zoomState.type) return;
       let newIndex = zoomState.index + direction;
       const maxIndex = zoomImages[zoomState.type].length - 1;
-      if (newIndex < 0 || newIndex > maxIndex) return;
+      // Loop carousel: wrap around to opposite end
+      if (newIndex < 0) newIndex = maxIndex;
+      if (newIndex > maxIndex) newIndex = 0;
       openZoom(zoomState.type, newIndex);
     }
 
