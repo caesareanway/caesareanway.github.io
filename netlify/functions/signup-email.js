@@ -1,7 +1,7 @@
 const { createClient } = require('@supabase/supabase-js');
 
-const SUPABASE_URL = 'https://hgrhtrwgrauwjguahvjv.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imhncmh0cndncmF1d2pndWFodmp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUyNzk4MDgsImV4cCI6MjA5MDg1NTgwOH0.0ywVMVVYqwQxehNDFRsPs2PYRVBrndZxz6ZnYl6g1b0';
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -15,7 +15,7 @@ exports.handler = async (event) => {
     const { email, source } = JSON.parse(event.body || '{}');
 
     // Validate email
-    if (!email || !email.includes('@')) {
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return {
         statusCode: 400,
         headers: { 'Content-Type': 'application/json' },

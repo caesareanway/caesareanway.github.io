@@ -708,7 +708,6 @@
   const PRODUCTS = {
     cd:    { name: 'Wretched Decrepitude EP', format: 'CD', price: 10.00 },
     head:  { name: 'Head',          format: 'T-Shirt', price: 20.00 },
-    eagle: { name: 'Eagle',         format: 'T-Shirt', price: 20.00 },
   };
 
   const SHIPPING = 5.00;
@@ -901,12 +900,11 @@
       return;
     }
 
-    const itemId = size ? `${productId}-${size}` : productId;
     const label  = size ? `${product.name} (${size})` : product.name;
     const format = size ? `${product.format} — ${size}` : product.format;
-
-    const existing = cart.find(i => i.id === itemId);
     const sku = size ? `${productId}-shirt-${size}` : productId;
+
+    const existing = cart.find(i => i.id === sku);
     const availableStock = getStock(sku);
     const cartQty = existing ? existing.qty : 0;
 
@@ -918,7 +916,7 @@
     if (existing) {
       existing.qty++;
     } else {
-      cart.push({ id: itemId, productId, name: label, format, price: product.price, qty: 1 });
+      cart.push({ id: sku, productId, name: label, format, price: product.price, qty: 1 });
     }
     sold[sku] = (sold[sku] || 0) + 1;
 
@@ -953,6 +951,10 @@
   }
 
   function removeItem(index) {
+    const item = cart[index];
+    if (item) {
+      sold[item.id] = Math.max(0, (sold[item.id] || 0) - item.qty);
+    }
     cart.splice(index, 1);
     saveCart();
   }
