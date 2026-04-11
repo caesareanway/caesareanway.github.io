@@ -177,8 +177,7 @@
     }
 
     #pr-btn-cd,
-    #pr-btn-head,
-    #pr-btn-eagle { min-height: 48px; }
+    #pr-btn-head { min-height: 48px; }
 
     /* ── Cart button in nav ── */
     .nav-cart {
@@ -647,49 +646,7 @@
       </div>
 
       <!-- Eagle -->
-      <div class="product-row">
-        <div class="product-img-wrap" onclick="openZoom('eagle', 0)">
-          <div class="product-img-placeholder" style="position: relative; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 20px;">
-            <!-- Eagle carousel -->
-            <div style="position: relative; width: 100%; display: flex; align-items: center; justify-content: center;">
-              <img id="eagle-display" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500'%3E%3Crect fill='%23111' width='400' height='500'/%3E%3Ctext x='200' y='250' font-size='24' fill='%23666' text-anchor='middle' dominant-baseline='middle'%3EEagle Shirt Image%3C/text%3E%3Ctext x='200' y='280' font-size='16' fill='%23555' text-anchor='middle' dominant-baseline='middle'%3EFront%3C/text%3E%3C/svg%3E" alt="Eagle" style="width: 100%; max-width: 100%; display: block; border-radius: 2px; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
-            </div>
 
-            <!-- Toggle buttons -->
-            <div style="display: flex; gap: 10px; justify-content: center;">
-              <button onclick="event.stopPropagation(); showProductSide('eagle', 'front')" id="btn-eagle-front" style="background: #fff; color: #000; border: none; padding: 8px 16px; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; cursor: pointer; border-radius: 2px; transition: all 0.2s; font-family: inherit;">FRONT</button>
-              <button onclick="event.stopPropagation(); showProductSide('eagle', 'back')" id="btn-eagle-back" style="background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.3); padding: 8px 16px; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; cursor: pointer; border-radius: 2px; transition: all 0.2s; font-family: inherit;">BACK</button>
-            </div>
-          </div>
-        </div>
-        <div class="product-info">
-          <div style="display: flex; align-items: center; gap: 12px; justify-content: space-between;">
-            <span class="product-tag">T-Shirt</span>
-            <span class="stock-badge" id="eagle-stock" style="display: none;"></span>
-          </div>
-          <div class="product-row-name">Eagle</div>
-          <div class="product-row-price">$20</div>
-          <p class="product-row-desc">
-            Black. Screen printed by <a href="https://www.instagram.com/optimisticprintsusa/" target="_blank" rel="noopener noreferrer">Optimistic Prints</a>.
-          </p>
-          <select class="size-select" id="eagle-size" onchange="onSizeChange('eagle')">
-            <option value="">Select Size</option>
-            <option value="S">S</option>
-            <option value="M">M</option>
-            <option value="L">L</option>
-            <option value="XL">XL</option>
-            <option value="XXL">XXL</option>
-            <option value="XXXL">XXXL</option>
-          </select>
-          <div class="product-actions">
-            <button class="btn-add-cart" id="add-eagle" onclick="addToCart('eagle')">Add to Cart</button>
-            <div class="express-checkout-section" id="express-eagle">
-              <div class="express-or">— or —</div>
-              <div id="pr-btn-eagle"></div>
-            </div>
-          </div>
-        </div>
-      </div>
 
     </div><!-- /product-list -->
 
@@ -708,7 +665,6 @@
   const PRODUCTS = {
     cd:    { name: 'Wretched Decrepitude EP', format: 'CD', price: 10.00 },
     head:  { name: 'Head',          format: 'T-Shirt', price: 20.00 },
-    eagle: { name: 'Eagle',         format: 'T-Shirt', price: 20.00 },
   };
 
   const SHIPPING = 5.00;
@@ -768,13 +724,7 @@
         'cd': 32,
         'head-shirt-XL': 11,
         'head-shirt-2XL': 3,
-        'head-shirt-3XL': 1,
-        'eagle-shirt-S': 7,
-        'eagle-shirt-M': 8,
-        'eagle-shirt-L': 12,
-        'eagle-shirt-XL': 12,
-        'eagle-shirt-XXL': 6,
-        'eagle-shirt-XXXL': 5
+        'head-shirt-3XL': 1
       };
       updateStockDisplay();
     }
@@ -784,13 +734,7 @@
     'cd': 0,
     'head-shirt-XL': 0,
     'head-shirt-2XL': 0,
-    'head-shirt-3XL': 0,
-    'eagle-shirt-S': 0,
-    'eagle-shirt-M': 0,
-    'eagle-shirt-L': 0,
-    'eagle-shirt-XL': 0,
-    'eagle-shirt-XXL': 0,
-    'eagle-shirt-XXXL': 0
+    'head-shirt-3XL': 0
   };
 
   function getStock(sku) {
@@ -800,7 +744,7 @@
   function checkStock(productId, size) {
     if (productId === 'cd') {
       return getStock('cd') > 0;
-    } else if (productId === 'head' || productId === 'eagle') {
+    } else if (productId === 'head') {
       return getStock(productId + '-' + size) > 0;
     }
     return false;
