@@ -4,6 +4,14 @@
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
+// Server-side price and SKU validation
+const VALID_PRODUCTS = {
+  'cd':              { price: 12, name: 'Wretched Decrepitude CD' },
+  'head-shirt-XL':   { price: 25, name: 'Head T-Shirt (XL)' },
+  'head-shirt-2XL':  { price: 25, name: 'Head T-Shirt (2XL)' },
+  'head-shirt-3XL':  { price: 25, name: 'Head T-Shirt (3XL)' },
+};
+
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
@@ -16,15 +24,28 @@ exports.handler = async (event) => {
       return { statusCode: 400, body: JSON.stringify({ error: 'Cart is empty' }) };
     }
 
-    // Build Stripe line items from cart
+    // Validate every item against server-side whitelist
+    for (const item of items) {
+      const valid = VALID_PRODUCTS[item.id];
+      if (!valid) {
+        return { statusCode: 400, body: JSON.stringify({ error: `Invalid product: ${item.id}` }) };
+      }
+      if (!Number.isInteger(item.qty) || item.qty < 1) {
+        return { statusCode: 400, body: JSON.stringify({ error: `Invalid quantity for ${item.id}` }) };
+      }
+      // Enforce server-side price — ignore client price
+      item.price = valid.price;
+    }
+
+    // Build Stripe line items from validated cart
     const lineItems = items.map(item => ({
       price_data: {
         currency: 'usd',
         product_data: {
-          name: item.name,
+          name: VALID_PRODUCTS[item.id].name,
           description: item.format || undefined,
         },
-        unit_amount: Math.round(item.price * 100), // convert to cents
+        unit_amount: VALID_PRODUCTS[item.id].price * 100,
       },
       quantity: item.qty,
     }));

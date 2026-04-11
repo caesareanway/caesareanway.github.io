@@ -7,7 +7,7 @@
   <title>CAESAREAN — Store</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600&display=swap&v=1" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
   <link rel="icon" href="assets/images/favicon.ico?v=2">
   <link rel="apple-touch-icon" href="assets/images/logo.png">
@@ -745,7 +745,7 @@
     if (productId === 'cd') {
       return getStock('cd') > 0;
     } else if (productId === 'head') {
-      return getStock(productId + '-' + size) > 0;
+      return getStock(productId + '-shirt-' + size) > 0;
     }
     return false;
   }
@@ -774,9 +774,6 @@
 
     // Head shirt
     updateShirtStockDisplay('head', ['XL', '2XL', '3XL']);
-
-    // Eagle shirt
-    updateShirtStockDisplay('eagle', ['S', 'M', 'L', 'XL', 'XXL', 'XXXL']);
   }
 
   function updateShirtStockDisplay(shirtId, sizes) {
@@ -828,7 +825,7 @@
     if (!product) return;
 
     let size = null;
-    if (productId === 'head' || productId === 'eagle') {
+    if (productId === 'head') {
       size = document.getElementById(productId + '-size').value;
       if (!size) {
         document.getElementById(productId + '-size').style.borderColor = 'var(--red)';
@@ -845,12 +842,11 @@
       return;
     }
 
-    const itemId = size ? `${productId}-${size}` : productId;
     const label  = size ? `${product.name} (${size})` : product.name;
     const format = size ? `${product.format} — ${size}` : product.format;
-
-    const existing = cart.find(i => i.id === itemId);
     const sku = size ? `${productId}-shirt-${size}` : productId;
+
+    const existing = cart.find(i => i.id === sku);
     const availableStock = getStock(sku);
     const cartQty = existing ? existing.qty : 0;
 
@@ -862,7 +858,7 @@
     if (existing) {
       existing.qty++;
     } else {
-      cart.push({ id: itemId, productId, name: label, format, price: product.price, qty: 1 });
+      cart.push({ id: sku, productId, name: label, format, price: product.price, qty: 1 });
     }
     sold[sku] = (sold[sku] || 0) + 1;
 
@@ -897,6 +893,10 @@
   }
 
   function removeItem(index) {
+    const item = cart[index];
+    if (item) {
+      sold[item.id] = Math.max(0, (sold[item.id] || 0) - item.qty);
+    }
     cart.splice(index, 1);
     saveCart();
   }
@@ -997,7 +997,7 @@
   // ── Stripe Payment Request (Apple Pay / Google Pay) ───────
   let stripeReady = false;
   let headPaymentRequestReady = false;
-  let eaglePaymentRequestReady = false;
+  // eaglePaymentRequestReady will be added when eagle shirts go live
 
   async function initStripe() {
     if (STRIPE_PK.includes('REPLACE')) return; // No key yet — skip
@@ -1108,44 +1108,7 @@
       }
     }
 
-    // ── Eagle — $20 product + $5 shipping = $25 total ────────
-    const prEagle = stripe.paymentRequest({
-      country: 'US', currency: 'usd',
-      total: { label: 'Eagle', amount: 2500 },
-      requestShipping: true,
-      shippingOptions,
-    });
-
-    prEagle.on('shippingaddresschange', ev => {
-      ev.updateWith({
-        status: ev.shippingAddress.country === 'US' ? 'success' : 'invalid_shipping_address',
-        shippingOptions,
-      });
-    });
-
-    prEagle.on('paymentmethod', ev => {
-      const size = document.getElementById('eagle-size').value || '?';
-      handlePaymentMethod(ev, {
-        amount: 2500,
-        description: `Eagle (${size})`,
-        shippingAddress: ev.shippingAddress,
-      });
-    });
-
-    const eagleElements = stripe.elements();
-    const prBtnEagle = eagleElements.create('paymentRequestButton', {
-      paymentRequest: prEagle,
-      style: { paymentRequestButton: { theme: 'light', height: '48px', type: 'buy' } },
-    });
-
-    const canEagle = await prEagle.canMakePayment();
-    if (canEagle) {
-      prBtnEagle.mount('#pr-btn-eagle');
-      eaglePaymentRequestReady = true;
-      if (document.getElementById('eagle-size').value) {
-        document.getElementById('express-eagle').classList.add('visible');
-      }
-    }
+    // Eagle payment request will be added when eagle shirts go live
 
     stripeReady = true;
   }
@@ -1161,7 +1124,7 @@
     const zoomImages = {
       cd: ['assets/images/WD Cover Digital.png'],
       head: ['assets/images/IMG_6504.jpeg', 'assets/images/IMG_6505.jpeg'],
-      eagle: ['placeholder.png', 'placeholder.png']
+      // eagle images will be added when photos are ready
     };
 
     function showProductSide(productId, side) {
@@ -1201,7 +1164,7 @@
         prevBtn.classList.add('hidden');
         nextBtn.classList.add('hidden');
         indicator.textContent = '';
-      } else if (type === 'head' || type === 'eagle') {
+      } else if (type === 'head') {
         prevBtn.classList.remove('hidden');
         nextBtn.classList.remove('hidden');
         indicator.textContent = (index + 1) + ' / 2';
@@ -1219,9 +1182,8 @@
 
     function zoomNav(direction) {
       if (!zoomState.type) return;
-      let newIndex = zoomState.index + direction;
-      const maxIndex = zoomImages[zoomState.type].length - 1;
-      if (newIndex < 0 || newIndex > maxIndex) return;
+      const imageCount = zoomImages[zoomState.type].length;
+      let newIndex = (zoomState.index + direction + imageCount) % imageCount;
       openZoom(zoomState.type, newIndex);
     }
 
