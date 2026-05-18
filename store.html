@@ -38,12 +38,19 @@
     .store-note a:hover { color: var(--fg); }
 
     /* Product rows */
-    .product-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; row-gap: 0; column-gap: clamp(40px, 5vw, 80px); }
+    .product-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(40px, 5vw, 80px); }
 
-    .product-tag-col {
-      padding-top: 20px;
+    .product-row {
+      display: flex;
+      flex-direction: column;
+      padding: 32px 0;
       border-top: 1px solid var(--border);
-      margin-bottom: 8px;
+    }
+
+    .product-info {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
     }
 
     .product-row:last-child { border-bottom: 1px solid var(--border); }
@@ -571,113 +578,106 @@
     <p class="store-note">US shipping only — $5.00 flat rate. International orders? <a href="/cdn-cgi/l/email-protection#87e4e8e9f3e6e4f3a9e4e6e2f4e6f5e2e6e9c7e0eae6eeeba9e4e8ea">Email us first.</a></p>
 
     <div class="product-list">
-      <!-- IMAGES ROW -->
-      <div class="product-img-wrap" onclick="openZoom('eagle', 0)">
-        <div class="product-img-placeholder" style="position: relative; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 20px;">
-          <div style="position: relative; width: 100%; display: flex; align-items: center; justify-content: center;">
-            <img id="eagle-display" src="assets/images/eagle front.jpg" alt="Eagle" style="width: 100%; max-width: 100%; display: block; border-radius: 2px; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+
+      <!-- Eagle -->
+      <div class="product-row">
+        <div class="product-img-wrap" onclick="openZoom('eagle', 0)">
+          <div class="product-img-placeholder" style="position: relative; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 20px;">
+            <div style="position: relative; width: 100%; display: flex; align-items: center; justify-content: center;">
+              <img id="eagle-display" src="assets/images/eagle front.jpg" alt="Eagle" style="width: 100%; max-width: 100%; display: block; border-radius: 2px; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+              <button onclick="event.stopPropagation(); showProductSide('eagle', 'front')" id="btn-eagle-front" style="background: #fff; color: #000; border: none; padding: 8px 16px; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; cursor: pointer; border-radius: 2px; transition: all 0.2s; font-family: inherit;">FRONT</button>
+              <button onclick="event.stopPropagation(); showProductSide('eagle', 'back')" id="btn-eagle-back" style="background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.3); padding: 8px 16px; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; cursor: pointer; border-radius: 2px; transition: all 0.2s; font-family: inherit;">BACK</button>
+            </div>
           </div>
-          <div style="display: flex; gap: 10px; justify-content: center;">
-            <button onclick="event.stopPropagation(); showProductSide('eagle', 'front')" id="btn-eagle-front" style="background: #fff; color: #000; border: none; padding: 8px 16px; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; cursor: pointer; border-radius: 2px; transition: all 0.2s; font-family: inherit;">FRONT</button>
-            <button onclick="event.stopPropagation(); showProductSide('eagle', 'back')" id="btn-eagle-back" style="background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.3); padding: 8px 16px; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; cursor: pointer; border-radius: 2px; transition: all 0.2s; font-family: inherit;">BACK</button>
+        </div>
+        <div class="product-info">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span class="product-tag">T-SHIRT</span>
+            <span class="stock-badge" id="eagle-stock" style="display: none;"></span>
+          </div>
+          <div class="product-row-name">Eagle</div>
+          <div class="product-row-price">$20</div>
+          <p class="product-row-desc">Black. Screen printed by <a href="https://www.instagram.com/optimisticprintsusa/" target="_blank" rel="noopener noreferrer">Optimistic Prints</a>.</p>
+          <div style="font-size: 12px; color: var(--fg-dim); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em;">Size</div>
+          <select class="size-select" id="eagle-size" onchange="onSizeChange('eagle')">
+            <option value="">Select Size</option>
+            <option value="S">S</option>
+            <option value="M">M</option>
+            <option value="L">L</option>
+            <option value="XL">XL</option>
+            <option value="XXL">XXL</option>
+            <option value="XXXL">XXXL</option>
+          </select>
+          <div class="product-actions" style="margin-top: auto;">
+            <button class="btn-add-cart" id="add-eagle" onclick="addToCart('eagle')">Add to Cart</button>
+            <div class="express-checkout-section" id="express-eagle">
+              <div class="express-or">— or —</div>
+              <div id="pr-btn-eagle"></div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="product-img-wrap" onclick="openZoom('head', 0)">
-        <div class="product-img-placeholder" style="position: relative; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 20px;">
-          <div style="position: relative; width: 100%; display: flex; align-items: center; justify-content: center;">
-            <img id="head-display" src="assets/images/IMG_6504.jpeg" alt="Head" style="width: 100%; max-width: 100%; display: block; border-radius: 2px; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+      <!-- Head -->
+      <div class="product-row">
+        <div class="product-img-wrap" onclick="openZoom('head', 0)">
+          <div class="product-img-placeholder" style="position: relative; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 20px;">
+            <div style="position: relative; width: 100%; display: flex; align-items: center; justify-content: center;">
+              <img id="head-display" src="assets/images/IMG_6504.jpeg" alt="Head" style="width: 100%; max-width: 100%; display: block; border-radius: 2px; transition: opacity 0.2s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+              <button onclick="event.stopPropagation(); showProductSide('head', 'front')" id="btn-head-front" style="background: #fff; color: #000; border: none; padding: 8px 16px; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; cursor: pointer; border-radius: 2px; transition: all 0.2s; font-family: inherit;">FRONT</button>
+              <button onclick="event.stopPropagation(); showProductSide('head', 'back')" id="btn-head-back" style="background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.3); padding: 8px 16px; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; cursor: pointer; border-radius: 2px; transition: all 0.2s; font-family: inherit;">BACK</button>
+            </div>
           </div>
-          <div style="display: flex; gap: 10px; justify-content: center;">
-            <button onclick="event.stopPropagation(); showProductSide('head', 'front')" id="btn-head-front" style="background: #fff; color: #000; border: none; padding: 8px 16px; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; cursor: pointer; border-radius: 2px; transition: all 0.2s; font-family: inherit;">FRONT</button>
-            <button onclick="event.stopPropagation(); showProductSide('head', 'back')" id="btn-head-back" style="background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.3); padding: 8px 16px; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; cursor: pointer; border-radius: 2px; transition: all 0.2s; font-family: inherit;">BACK</button>
+        </div>
+        <div class="product-info">
+          <div style="display: flex; align-items: center; gap: 12px; justify-content: space-between;">
+            <span class="product-tag">T-SHIRT</span>
+            <span class="stock-badge" id="head-stock" style="display: none;"></span>
+          </div>
+          <div class="product-row-name">Head</div>
+          <div class="product-row-price">$20</div>
+          <p class="product-row-desc">Black. Screen printed by <a href="https://www.instagram.com/optimisticprintsusa/" target="_blank" rel="noopener noreferrer">Optimistic Prints</a>.</p>
+          <div style="font-size: 12px; color: var(--fg-dim); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em;">Size</div>
+          <select class="size-select" id="head-size" onchange="onSizeChange('head')">
+            <option value="">Select Size</option>
+            <option value="XL">XL</option>
+            <option value="2XL">2XL</option>
+            <option value="3XL">3XL</option>
+          </select>
+          <div class="product-actions" style="margin-top: auto;">
+            <button class="btn-add-cart" id="add-head" onclick="addToCart('head')">Add to Cart</button>
+            <div class="express-checkout-section" id="express-head">
+              <div class="express-or">— or —</div>
+              <div id="pr-btn-head"></div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="product-img-wrap" onclick="openZoom('cd', 0)">
-        <img src="assets/images/WD Cover Digital.png" alt="Wretched Decrepitude EP — CD cover art">
-      </div>
-
-      <!-- TAGS ROW -->
-      <div class="product-tag-col" style="display: flex; align-items: center; gap: 12px; justify-content: space-between;">
-        <span class="product-tag">T-SHIRT</span>
-        <span class="stock-badge" id="eagle-stock" style="display: none;"></span>
-      </div>
-
-      <div class="product-tag-col" style="display: flex; align-items: center; gap: 12px; justify-content: space-between;">
-        <span class="product-tag">T-SHIRT</span>
-        <span class="stock-badge" id="head-stock" style="display: none;"></span>
-      </div>
-
-      <div class="product-tag-col" style="display: flex; align-items: center; gap: 12px;">
-        <span class="product-tag">CD</span>
-        <span class="stock-badge" id="cd-stock" style="display: none;"></span>
-      </div>
-
-      <!-- NAMES ROW -->
-      <div class="product-row-name">Eagle</div>
-      <div class="product-row-name">Head</div>
-      <div class="product-row-name">Wretched Decrepitude</div>
-
-      <!-- PRICES ROW -->
-      <div class="product-row-price">$20</div>
-      <div class="product-row-price">$20</div>
-      <div class="product-row-price">$10</div>
-
-      <!-- DESCRIPTIONS ROW -->
-      <p class="product-row-desc">Black. Screen printed by <a href="https://www.instagram.com/optimisticprintsusa/" target="_blank" rel="noopener noreferrer">Optimistic Prints</a>.</p>
-      <p class="product-row-desc">Black. Screen printed by <a href="https://www.instagram.com/optimisticprintsusa/" target="_blank" rel="noopener noreferrer">Optimistic Prints</a>.</p>
-      <p class="product-row-desc">Debut EP. Six tracks of gore-soaked<br>death metal. Horror Pain Gore Death<br>Productions, 2025.</p>
-
-      <!-- SIZE LABELS ROW -->
-      <div style="font-size: 12px; color: var(--fg-dim); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;">Size</div>
-      <div style="font-size: 12px; color: var(--fg-dim); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em;">Size</div>
-      <div></div>
-
-      <!-- SIZE SELECTORS ROW -->
-      <select class="size-select" id="eagle-size" onchange="onSizeChange('eagle')">
-        <option value="">Select Size</option>
-        <option value="S">S</option>
-        <option value="M">M</option>
-        <option value="L">L</option>
-        <option value="XL">XL</option>
-        <option value="XXL">XXL</option>
-        <option value="XXXL">XXXL</option>
-      </select>
-
-      <select class="size-select" id="head-size" onchange="onSizeChange('head')">
-        <option value="">Select Size</option>
-        <option value="XL">XL</option>
-        <option value="2XL">2XL</option>
-        <option value="3XL">3XL</option>
-      </select>
-
-      <div></div>
-
-      <!-- BUTTONS ROW -->
-      <div class="product-actions">
-        <button class="btn-add-cart" id="add-eagle" onclick="addToCart('eagle')">Add to Cart</button>
-        <div class="express-checkout-section" id="express-eagle">
-          <div class="express-or">— or —</div>
-          <div id="pr-btn-eagle"></div>
+      <!-- CD -->
+      <div class="product-row">
+        <div class="product-img-wrap" onclick="openZoom('cd', 0)">
+          <img src="assets/images/WD Cover Digital.png" alt="Wretched Decrepitude EP — CD cover art">
         </div>
-      </div>
-
-      <div class="product-actions">
-        <button class="btn-add-cart" id="add-head" onclick="addToCart('head')">Add to Cart</button>
-        <div class="express-checkout-section" id="express-head">
-          <div class="express-or">— or —</div>
-          <div id="pr-btn-head"></div>
-        </div>
-      </div>
-
-      <div class="product-actions">
-        <button class="btn-add-cart" id="add-cd" onclick="addToCart('cd')">Add to Cart</button>
-        <div class="express-checkout-section" id="express-cd">
-          <div class="express-or">— or —</div>
-          <div id="pr-btn-cd"></div>
+        <div class="product-info">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span class="product-tag">CD</span>
+            <span class="stock-badge" id="cd-stock" style="display: none;"></span>
+          </div>
+          <div class="product-row-name">Wretched Decrepitude</div>
+          <div class="product-row-price">$10</div>
+          <p class="product-row-desc">Debut EP. Six tracks of gore-soaked<br>death metal. Horror Pain Gore Death<br>Productions, 2025.</p>
+          <div class="product-actions" style="margin-top: auto;">
+            <button class="btn-add-cart" id="add-cd" onclick="addToCart('cd')">Add to Cart</button>
+            <div class="express-checkout-section" id="express-cd">
+              <div class="express-or">— or —</div>
+              <div id="pr-btn-cd"></div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -790,7 +790,7 @@
   function checkStock(productId, size) {
     if (productId === 'cd') {
       return getStock('cd') > 0;
-    } else if (productId === 'head') {
+    } else if (productId === 'head' || productId === 'eagle') {
       return getStock(productId + '-shirt-' + size) > 0;
     }
     return false;
@@ -874,7 +874,7 @@
     if (!product) return;
 
     let size = null;
-    if (productId === 'head') {
+    if (productId === 'head' || productId === 'eagle') {
       size = document.getElementById(productId + '-size').value;
       if (!size) {
         document.getElementById(productId + '-size').style.borderColor = 'var(--red)';
