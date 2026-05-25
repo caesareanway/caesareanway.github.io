@@ -10,6 +10,12 @@ const VALID_PRODUCTS = {
   'head-shirt-XL':   { price: 20, name: 'Head T-Shirt (XL)' },
   'head-shirt-2XL':  { price: 20, name: 'Head T-Shirt (2XL)' },
   'head-shirt-3XL':  { price: 20, name: 'Head T-Shirt (3XL)' },
+  'eagle-shirt-S':   { price: 20, name: 'Eagle T-Shirt (S)' },
+  'eagle-shirt-M':   { price: 20, name: 'Eagle T-Shirt (M)' },
+  'eagle-shirt-L':   { price: 20, name: 'Eagle T-Shirt (L)' },
+  'eagle-shirt-XL':  { price: 20, name: 'Eagle T-Shirt (XL)' },
+  'eagle-shirt-XXL': { price: 20, name: 'Eagle T-Shirt (XXL)' },
+  'eagle-shirt-XXXL': { price: 20, name: 'Eagle T-Shirt (XXXL)' },
 };
 
 exports.handler = async (event) => {

@@ -1,9 +1,14 @@
 // Netlify Function: handle-stripe-webhook.js
 // Listens for Stripe webhook events (checkout.session.completed)
 // and decrements inventory in Supabase when payment succeeds.
+// ALSO sends purchase notification emails to admin and customer.
 
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const sgMail = require('@sendgrid/mail');
 const { createClient } = require('@supabase/supabase-js');
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'contact.caesarean@gmail.com';
 
 // Initialize Supabase with service role key (allows inventory updates)
 const supabase = createClient(
@@ -60,6 +65,13 @@ exports.handler = async (event) => {
 
       console.log('Processing inventory update for SKUs:', cartItems);
 
+      // Extract customer and order info for email notifications
+      const orderId = session.payment_intent || session.id;
+      const customerEmail = session.customer_details?.email;
+      const customerName = session.customer_details?.name || 'Customer';
+      const shippingAddress = session.shipping_details?.address || {};
+      const amountTotal = (session.amount_total / 100).toFixed(2);
+
       // Decrement inventory for each item in the cart
       for (const item of cartItems) {
         const { sku, qty } = item;
@@ -111,11 +123,100 @@ exports.handler = async (event) => {
         }
       }
 
+      // ── Send email notifications ──────────────────────
+      if (customerEmail) {
+        try {
+          // Fetch line items from Stripe for email
+          const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
+          const itemsFormatted = lineItems.data
+            .map(item => `• ${item.quantity}x ${item.description} — $${(item.price.unit_amount / 100).toFixed(2)}`)
+            .join('\n');
+
+          const itemsSimple = lineItems.data
+            .map(item => `${item.quantity}x ${item.description}`)
+            .join(', ');
+
+          // Format shipping address
+          const addressLines = [
+            shippingAddress.line1,
+            shippingAddress.line2,
+            `${shippingAddress.city}, ${shippingAddress.state} ${shippingAddress.postal_code}`,
+            shippingAddress.country
+          ].filter(Boolean);
+          const fullAddress = addressLines.join('\n');
+
+          // Email to admin
+          const adminEmailMsg = {
+            to: ADMIN_EMAIL,
+            from: 'em8484@caesarean.org',
+            subject: `New Order — ${itemsSimple}`,
+            html: `
+              <h2>New Order Received</h2>
+              <p><strong>Order ID:</strong> ${orderId}</p>
+
+              <h3>Customer</h3>
+              <p>
+                <strong>Name:</strong> ${customerName}<br>
+                <strong>Email:</strong> ${customerEmail}
+              </p>
+
+              <h3>Shipping Address</h3>
+              <p>${fullAddress.replace(/\n/g, '<br>')}</p>
+
+              <h3>Items Ordered</h3>
+              <p>${itemsFormatted.replace(/\n/g, '<br>')}</p>
+
+              <h3>Total Paid</h3>
+              <p><strong>$${amountTotal}</strong></p>
+            `
+          };
+
+          // Email to customer
+          const customerEmailMsg = {
+            to: customerEmail,
+            from: 'em8484@caesarean.org',
+            subject: 'Order Confirmation — Caesarean',
+            html: `
+              <h2>Order Confirmed</h2>
+              <p>Thank you for your order!</p>
+
+              <h3>Order Summary</h3>
+              <p>${itemsFormatted.replace(/\n/g, '<br>')}</p>
+
+              <h3>Total</h3>
+              <p><strong>$${amountTotal}</strong></p>
+
+              <h3>Shipping To</h3>
+              <p>${fullAddress.replace(/\n/g, '<br>')}</p>
+
+              <h3>Estimated Delivery</h3>
+              <p>5-7 business days (US Standard Shipping)</p>
+
+              <h3>Questions?</h3>
+              <p>Contact us: <a href="mailto:contact.caesarean@gmail.com">contact.caesarean@gmail.com</a></p>
+            `
+          };
+
+          // Send both emails
+          await Promise.all([
+            sgMail.send(adminEmailMsg),
+            sgMail.send(customerEmailMsg)
+          ]);
+
+          console.log(`✓ Purchase confirmation emails sent for order ${orderId}`);
+          console.log(`  Admin: ${ADMIN_EMAIL}`);
+          console.log(`  Customer: ${customerEmail}`);
+        } catch (emailErr) {
+          // Log email error but don't fail the webhook
+          console.error('Error sending confirmation emails:', emailErr.message);
+        }
+      }
+
       return {
         statusCode: 200,
         body: JSON.stringify({
           success: true,
-          message: 'Inventory updated',
+          message: 'Inventory updated and emails sent',
           items_processed: cartItems.length,
         }),
       };
