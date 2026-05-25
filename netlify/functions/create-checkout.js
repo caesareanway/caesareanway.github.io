@@ -94,7 +94,8 @@ exports.handler = async (event) => {
       customer_creation: 'always',
 
       // Redirect URLs — fallback to hardcoded domain if Netlify URL env var isn't set
-      success_url: `${process.env.URL || 'https://caesarean.org'}/success.html`,
+      // Pass session ID as parameter so success page can display order info
+      success_url: `${process.env.URL || 'https://caesarean.org'}/success.html?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url:  `${process.env.URL || 'https://caesarean.org'}/store.html`,
     });
 
