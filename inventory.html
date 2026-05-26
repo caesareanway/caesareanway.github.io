@@ -155,6 +155,14 @@
       font-size: 0.85rem;
       margin-top: 8px;
     }
+    .order-tracking {
+      color: #5dd95d;
+      font-size: 0.85rem;
+      margin-top: 8px;
+      padding: 8px;
+      background: #0f2a0f;
+      border-left: 2px solid #2a7a2a;
+    }
     .order-actions {
       display: flex;
       gap: 8px;
@@ -744,20 +752,27 @@ ${addressText}
 Items: ${items}
 Weight: ${weight.toFixed(1)} oz`;
 
+      const isShipped = order.status === 'shipped';
       card.innerHTML = `
         <div class="order-header">
           <div>
             <div class="order-number">${order.order_number || 'N/A'}</div>
             <div class="order-customer">${order.customer_name || 'Unknown'}</div>
           </div>
-          <div style="color: #666; font-size: 0.8rem;">${order.country || 'US'}</div>
+          <div style="color: #666; font-size: 0.8rem;">${order.country || 'US'} ${isShipped ? '• Shipped' : ''}</div>
         </div>
         <div class="order-address">${addressText.replace(/\n/g, '<br>')}</div>
         <div class="order-items"><strong>Items:</strong> ${items}</div>
         <div class="order-weight"><strong>Weight:</strong> ${weight.toFixed(1)} oz</div>
-        <div class="order-actions">
-          <button class="copy-address-btn" onclick="copyToClipboard('${encodeURIComponent(fullOrderInfo)}')">Copy All</button>
-          <button class="mark-shipped-btn" onclick="markAsShipped('${order.id}')">✓ Shipped</button>
+        ${order.tracking_number ? `<div class="order-tracking"><strong>Tracking:</strong> <code style="background: #111; padding: 4px 8px; border-radius: 3px;">${order.tracking_number}</code></div>` : ''}
+        <div class="order-actions" ${isShipped ? 'style="opacity: 0.5;"' : ''}>
+          <button class="copy-address-btn" onclick="copyToClipboard('${encodeURIComponent(fullOrderInfo)}')" ${isShipped ? 'disabled' : ''}>Copy All</button>
+          ${!isShipped ? `
+            <input type="text" id="tracking_${order.id}" placeholder="Pirateship tracking #" style="flex: 1; background: #111; border: 1px solid #333; color: #f0f0f0; padding: 8px; font-family: 'Courier New', monospace; font-size: 0.9rem;">
+            <button class="mark-shipped-btn" onclick="markAsShipped('${order.id}', document.getElementById('tracking_${order.id}').value)">✓ Shipped</button>
+          ` : `
+            <button class="mark-shipped-btn" disabled style="opacity: 0.6; cursor: default;">Shipped ✓</button>
+          `}
         </div>
       `;
       grid.appendChild(card);
@@ -772,20 +787,30 @@ Weight: ${weight.toFixed(1)} oz`;
       .subscribe();
   }
 
-  async function markAsShipped(orderId) {
+  async function markAsShipped(orderId, trackingNumber = null) {
     try {
+      const updateData = {
+        status: 'shipped',
+        updated_at: new Date().toISOString()
+      };
+
+      if (trackingNumber && trackingNumber.trim()) {
+        updateData.tracking_number = trackingNumber.trim();
+      }
+
       const { error } = await supabase
         .from('orders')
-        .update({ status: 'shipped', updated_at: new Date().toISOString() })
+        .update(updateData)
         .eq('id', orderId);
 
       if (error) throw error;
 
-      console.log('✓ Marked order as shipped:', orderId);
-      loadOrders();
+      console.log('✓ Marked order as shipped:', orderId, trackingNumber ? `(Tracking: ${trackingNumber})` : '');
+      setStatusShipping('✓ Order marked as shipped' + (trackingNumber ? ' with tracking' : ''), 'synced');
+      setTimeout(() => loadOrders(), 500);
     } catch (err) {
       console.error('Failed to mark order as shipped:', err);
-      alert('Error: ' + err.message);
+      setStatusShipping('✗ Error: ' + err.message, 'error');
     }
   }
 
