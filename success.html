@@ -51,34 +51,38 @@
       background: var(--bg-secondary, rgba(0,0,0,0.03));
       border: 1px solid var(--border);
       border-radius: 6px;
-      padding: 20px;
+      padding: 24px;
       margin: 40px 0;
-      text-align: left;
+      text-align: center;
     }
 
     .order-detail-row {
       display: flex;
-      justify-content: space-between;
+      flex-direction: column;
       align-items: center;
-      padding: 12px 0;
+      gap: 12px;
       font-size: 14px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .order-detail-row:last-child {
-      border-bottom: none;
     }
 
     .order-label {
       color: var(--fg-dim);
       font-weight: 500;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
     }
 
     .order-value {
       color: var(--fg);
       font-family: 'Courier New', monospace;
-      font-size: 13px;
+      font-size: 14px;
+      letter-spacing: 0.05em;
       word-break: break-all;
+      background: rgba(0,0,0,0.1);
+      padding: 12px 16px;
+      border-radius: 4px;
+      max-width: 100%;
+      overflow-wrap: break-word;
     }
 
     .copy-button {
@@ -89,7 +93,7 @@
       font-size: 12px;
       padding: 0;
       text-decoration: underline;
-      margin-left: 8px;
+      font-weight: 600;
     }
 
     .copy-button:hover {
@@ -146,16 +150,18 @@
     <div class="success-mark">✦</div>
     <h1 class="success-heading">Order Confirmed</h1>
     <p class="success-body">
-      Your order has been placed. Save your order ID below for your records.
-      <br>Expected delivery: 5–7 business days (US Standard Shipping).
+      Your order has been placed.
+      <br><br>
+      Save your Order ID below for your records.<br>
+      Expected delivery: 5–7 business days.
     </p>
 
     <div class="order-details" id="orderDetails" style="display: none;">
       <div class="order-detail-row">
-        <span class="order-label">Order ID:</span>
-        <div style="display: flex; align-items: center;">
-          <span class="order-value" id="orderId"></span>
-          <button class="copy-button" onclick="copyOrderId()">copy</button>
+        <span class="order-label">Order Number</span>
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%;">
+          <span class="order-value" id="orderId" style="cursor: pointer;"></span>
+          <button class="copy-button" onclick="copyOrderId()">copy order number</button>
         </div>
       </div>
     </div>
@@ -174,25 +180,30 @@
 </div>
 
 <script>
-  // Extract order ID from URL and display it
+  // Extract session ID and generate short order number
   function initializeOrderDetails() {
     const params = new URLSearchParams(window.location.search);
     const sessionId = params.get('session_id');
 
     if (sessionId) {
-      document.getElementById('orderId').textContent = sessionId;
+      // Generate short order number from last 6 chars of session ID
+      const shortId = 'ORD-' + sessionId.slice(-6).toUpperCase();
+      document.getElementById('orderId').textContent = shortId;
       document.getElementById('orderDetails').style.display = 'block';
+      // Store full session ID for copying if needed
+      document.getElementById('orderId').dataset.fullId = sessionId;
     }
   }
 
-  // Copy order ID to clipboard
+  // Copy order number to clipboard
   function copyOrderId() {
-    const orderId = document.getElementById('orderId').textContent;
+    const orderIdElement = document.getElementById('orderId');
+    const orderId = orderIdElement.textContent;
     if (orderId) {
       navigator.clipboard.writeText(orderId).then(() => {
         const btn = event.target;
         const originalText = btn.textContent;
-        btn.textContent = 'copied!';
+        btn.textContent = '✓ copied!';
         setTimeout(() => {
           btn.textContent = originalText;
         }, 2000);
@@ -204,9 +215,9 @@
         textArea.select();
         document.execCommand('copy');
         document.body.removeChild(textArea);
-        event.target.textContent = 'copied!';
+        event.target.textContent = '✓ copied!';
         setTimeout(() => {
-          event.target.textContent = 'copy';
+          event.target.textContent = 'copy order number';
         }, 2000);
       });
     }

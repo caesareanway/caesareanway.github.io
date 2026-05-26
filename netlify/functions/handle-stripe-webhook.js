@@ -47,6 +47,9 @@ exports.handler = async (event) => {
     const session = stripeEvent.data.object;
 
     try {
+      // Generate a short order ID from session ID (consistent, drummer-friendly)
+      const shortId = 'ORD-' + session.id.slice(-6).toUpperCase();
+
       // Get cart items from session metadata
       let cartItems = [];
       if (session.metadata?.cart_items) {
@@ -59,18 +62,30 @@ exports.handler = async (event) => {
       }
 
       if (cartItems.length === 0) {
-        console.log('Session has no cart items, skipping inventory update');
+        console.log('Session has no cart items, skipping order processing');
         return { statusCode: 200, body: JSON.stringify({ success: true }) };
       }
 
-      console.log('Processing inventory update for SKUs:', cartItems);
+      console.log('Processing order for SKUs:', cartItems);
 
-      // Extract customer and order info for email notifications
-      const orderId = session.payment_intent || session.id;
+      // Extract customer and order info
       const customerEmail = session.customer_details?.email;
       const customerName = session.customer_details?.name || 'Customer';
       const shippingAddress = session.shipping_details?.address || {};
-      const amountTotal = (session.amount_total / 100).toFixed(2);
+      const amountTotal = session.amount_total; // in cents
+      const country = shippingAddress.country || 'US';
+
+      // Calculate package weight (CD: 0.5 oz, Shirt: 0.3 oz per item)
+      let totalWeight = 0;
+      cartItems.forEach(item => {
+        const qty = item.qty || 1;
+        if (item.sku.includes('cd')) {
+          totalWeight += 0.5 * qty;
+        } else if (item.sku.includes('shirt')) {
+          totalWeight += 0.3 * qty;
+        }
+      });
+      console.log(`Package weight: ${totalWeight} oz`);
 
       // Decrement inventory for each item in the cart
       for (const item of cartItems) {
@@ -117,10 +132,121 @@ exports.handler = async (event) => {
             console.log(
               `✓ Decremented ${sku} by ${qty} (new quantity: ${newQuantity})`
             );
+
+            // Log to audit_log
+            try {
+              await supabase
+                .from('audit_log')
+                .insert([{
+                  product: sku,
+                  previous_qty: currentData.quantity,
+                  new_qty: newQuantity,
+                  reason: `Order ${shortId}`,
+                  timestamp: new Date().toISOString(),
+                }]);
+            } catch (logErr) {
+              console.error(`Failed to log inventory change for ${sku}:`, logErr);
+            }
           }
         } catch (itemErr) {
           console.error(`Error processing item ${sku}:`, itemErr);
         }
+      }
+
+      // ── Create order record in Supabase ──────────────
+      let trackingNumber = null;
+      let pirateshiplabelUrl = null;
+
+      try {
+        const orderData = {
+          stripe_session_id: session.id,
+          order_number: shortId,
+          customer_email: customerEmail,
+          customer_name: customerName,
+          shipping_address: shippingAddress,
+          items: cartItems,
+          total_amount: amountTotal,
+          country: country,
+          status: 'pending',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        };
+
+        const { data: insertedOrder, error: insertError } = await supabase
+          .from('orders')
+          .insert([orderData])
+          .select();
+
+        if (insertError) {
+          console.error('Failed to create order record:', insertError);
+        } else {
+          console.log(`✓ Created order record: ${shortId}`);
+        }
+
+        // ── Call Pirateship API to create shipping label ────────
+        const pirateshipApiKey = process.env.PIRATESHIP_API_KEY;
+        if (pirateshipApiKey) {
+          try {
+            // Determine USPS service based on country
+            const service = country === 'US' ? 'PriorityMail' : 'PriorityMailInternational';
+
+            const labelPayload = {
+              carrierType: 'USPS',
+              serviceType: service,
+              weight: Math.ceil(totalWeight * 16), // Convert oz to 1/16 oz (USPS format)
+              toAddress: {
+                name: customerName,
+                street1: shippingAddress.line1,
+                street2: shippingAddress.line2 || '',
+                city: shippingAddress.city || '',
+                state: shippingAddress.state || '',
+                zip: shippingAddress.postal_code || '',
+                country: country,
+              },
+            };
+
+            const pirateshipRes = await fetch('https://api.pirateship.com/labels', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-PS-Auth': pirateshipApiKey,
+              },
+              body: JSON.stringify(labelPayload),
+            });
+
+            const labelData = await pirateshipRes.json();
+
+            if (pirateshipRes.ok && labelData.trackingNumber) {
+              trackingNumber = labelData.trackingNumber;
+              pirateshiplabelUrl = labelData.labelUrl || null;
+
+              // Update order with tracking info
+              const { error: updateError } = await supabase
+                .from('orders')
+                .update({
+                  tracking_number: trackingNumber,
+                  pirateship_label_url: pirateshiplabelUrl,
+                  updated_at: new Date().toISOString(),
+                })
+                .eq('stripe_session_id', session.id);
+
+              if (updateError) {
+                console.error('Failed to update order with tracking:', updateError);
+              } else {
+                console.log(`✓ Created Pirateship label: ${trackingNumber}`);
+              }
+            } else {
+              console.error('Pirateship API error:', labelData);
+            }
+          } catch (pirateshipErr) {
+            // Log Pirateship error but don't fail the order
+            console.error('Pirateship API call failed (non-fatal):', pirateshipErr.message);
+          }
+        } else {
+          console.log('Pirateship API key not configured, skipping label creation');
+        }
+      } catch (orderErr) {
+        console.error('Error processing order creation:', orderErr);
       }
 
       // ── Send email notifications ──────────────────────
@@ -152,7 +278,7 @@ exports.handler = async (event) => {
             subject: `New Order — ${itemsSimple}`,
             html: `
               <h2>New Order Received</h2>
-              <p><strong>Order ID:</strong> ${orderId}</p>
+              <p><strong>Order ID:</strong> ${shortId}</p>
 
               <h3>Customer</h3>
               <p>
@@ -167,7 +293,7 @@ exports.handler = async (event) => {
               <p>${itemsFormatted.replace(/\n/g, '<br>')}</p>
 
               <h3>Total Paid</h3>
-              <p><strong>$${amountTotal}</strong></p>
+              <p><strong>$${(amountTotal / 100).toFixed(2)}</strong></p>
             `
           };
 
@@ -184,7 +310,7 @@ exports.handler = async (event) => {
               <p>${itemsFormatted.replace(/\n/g, '<br>')}</p>
 
               <h3>Total</h3>
-              <p><strong>$${amountTotal}</strong></p>
+              <p><strong>$${(amountTotal / 100).toFixed(2)}</strong></p>
 
               <h3>Shipping To</h3>
               <p>${fullAddress.replace(/\n/g, '<br>')}</p>
@@ -203,7 +329,7 @@ exports.handler = async (event) => {
             sgMail.send(customerEmailMsg)
           ]);
 
-          console.log(`✓ Purchase confirmation emails sent for order ${orderId}`);
+          console.log(`✓ Purchase confirmation emails sent for order ${shortId}`);
           console.log(`  Admin: ${ADMIN_EMAIL}`);
           console.log(`  Customer: ${customerEmail}`);
         } catch (emailErr) {
@@ -216,8 +342,11 @@ exports.handler = async (event) => {
         statusCode: 200,
         body: JSON.stringify({
           success: true,
-          message: 'Inventory updated and emails sent',
+          message: 'Order processed successfully',
+          order_number: shortId,
           items_processed: cartItems.length,
+          tracking_number: trackingNumber || null,
+          pirateship_label_created: !!trackingNumber,
         }),
       };
     } catch (err) {

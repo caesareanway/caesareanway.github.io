@@ -90,6 +90,130 @@
     }
     .subtitle { color: #666; font-size: 0.85rem; }
 
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 28px;
+      border-bottom: 1px solid #1c1c1c;
+    }
+    .tab-btn {
+      background: none;
+      border: none;
+      color: #666;
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 12px 0;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      font-family: 'Inter', sans-serif;
+    }
+    .tab-btn.active { color: #f0f0f0; border-bottom-color: #c00000; }
+    .tab-btn:hover { color: #ccc; }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* Orders */
+    .order-card {
+      background: #111;
+      border: 1px solid #1c1c1c;
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+    .order-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 12px;
+    }
+    .order-number {
+      font-weight: 600;
+      color: #f0f0f0;
+    }
+    .order-customer {
+      color: #999;
+      font-size: 0.9rem;
+    }
+    .order-address {
+      background: #0a0a0a;
+      padding: 12px;
+      margin: 12px 0;
+      border-left: 2px solid #333;
+      font-size: 0.85rem;
+      color: #ccc;
+      line-height: 1.5;
+      font-family: 'Courier New', monospace;
+    }
+    .order-items {
+      font-size: 0.9rem;
+      color: #ccc;
+      margin: 8px 0;
+    }
+    .order-weight {
+      color: #999;
+      font-size: 0.85rem;
+      margin-top: 8px;
+    }
+    .order-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .mark-shipped-btn {
+      background: #1c5a1c;
+      border: 1px solid #2a7a2a;
+      color: #5dd95d;
+      padding: 8px 12px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+    }
+    .mark-shipped-btn:hover { background: #2a7a2a; }
+    .copy-address-btn {
+      background: #1c1c1c;
+      border: 1px solid #333;
+      color: #999;
+      padding: 8px 12px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+    }
+    .copy-address-btn:hover { background: #333; color: #f0f0f0; }
+
+    .no-orders {
+      background: #111;
+      border: 1px solid #1c1c1c;
+      padding: 24px;
+      text-align: center;
+      color: #666;
+    }
+
+    /* Audit Log */
+    .audit-log-section {
+      margin-top: 40px;
+      border-top: 1px solid #1c1c1c;
+      padding-top: 24px;
+    }
+    .audit-log-title {
+      font-weight: 600;
+      margin-bottom: 16px;
+      font-size: 0.95rem;
+    }
+    .audit-entry {
+      background: #111;
+      border: 1px solid #1c1c1c;
+      padding: 12px;
+      margin-bottom: 8px;
+      font-size: 0.85rem;
+    }
+    .audit-product { font-weight: 600; color: #f0f0f0; }
+    .audit-change { color: #5dd95d; }
+    .audit-reason { color: #999; font-size: 0.8rem; }
+    .audit-time { color: #666; font-size: 0.75rem; }
+    .no-changes { color: #666; text-align: center; padding: 20px; }
+
     .status {
       background: #1c1c1c;
       border: 1px solid #333;
@@ -174,13 +298,31 @@
 <div class="app-screen" id="appScreen">
   <div class="container">
     <header>
-      <h1>Inventory</h1>
-      <p class="subtitle">CAESAREAN</p>
+      <h1>CAESAREAN</h1>
+      <p class="subtitle">Drummer Dashboard</p>
     </header>
 
-    <div class="status" id="status">Connecting...</div>
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('inventory')">Inventory</button>
+      <button class="tab-btn" onclick="switchTab('shipping')">Shipping</button>
+    </div>
 
-    <div id="inventoryGrid"></div>
+    <!-- Inventory Tab -->
+    <div id="inventory" class="tab-content active">
+      <div class="status" id="status">Connecting...</div>
+      <div id="inventoryGrid"></div>
+      <div class="audit-log-section">
+        <div class="audit-log-title">Recent Changes</div>
+        <div id="auditLog"></div>
+      </div>
+    </div>
+
+    <!-- Shipping Tab -->
+    <div id="shipping" class="tab-content">
+      <div class="status" id="statusShipping">Loading orders...</div>
+      <div id="ordersGrid"></div>
+    </div>
 
     <div class="footer-actions">
       <button class="logout-btn" onclick="handleLogout()">Sign Out</button>
@@ -281,6 +423,7 @@
     try {
       await initSupabase();
       await loadInventory();
+      await loadAuditLog();
       subscribeToChanges();
       setStatus('Connected', 'synced');
     } catch (err) {
@@ -372,7 +515,11 @@
 
       console.log(`✓ Updated ${product}: ${confirmedQty}`);
 
+      // Log to audit_log
+      await logInventoryChange(product, current, confirmedQty, 'Manual adjustment');
+
       renderInventory();
+      await loadAuditLog();
       const ts = document.getElementById('ts-' + product);
       if (ts) ts.textContent = 'Updated ' + new Date().toLocaleTimeString();
       setStatus('Saved', 'synced');
@@ -380,6 +527,62 @@
       console.error(`✗ Failed to update ${product}:`, err);
       setStatus('Save failed: ' + err.message, 'error');
     }
+  }
+
+  async function logInventoryChange(product, prevQty, newQty, reason) {
+    try {
+      const { error } = await supabase
+        .from('audit_log')
+        .insert([{
+          product: product,
+          previous_qty: prevQty,
+          new_qty: newQty,
+          reason: reason,
+          timestamp: new Date().toISOString(),
+        }]);
+
+      if (error) console.error('Failed to log inventory change:', error);
+    } catch (err) {
+      console.error('Error logging inventory change:', err);
+    }
+  }
+
+  async function loadAuditLog() {
+    try {
+      const { data, error } = await supabase
+        .from('audit_log')
+        .select('*')
+        .order('timestamp', { ascending: false })
+        .limit(20);
+
+      if (error) throw error;
+      renderAuditLog(data || []);
+    } catch (err) {
+      console.error('Failed to load audit log:', err);
+    }
+  }
+
+  function renderAuditLog(entries) {
+    const logEl = document.getElementById('auditLog');
+    if (!logEl) return;
+
+    if (entries.length === 0) {
+      logEl.innerHTML = '<div class="no-changes">No changes yet</div>';
+      return;
+    }
+
+    logEl.innerHTML = entries.map(entry => {
+      const time = new Date(entry.timestamp).toLocaleString();
+      const arrow = entry.previous_qty > entry.new_qty ? '↓' : '↑';
+      return `
+        <div class="audit-entry">
+          <div class="audit-product">${entry.product}</div>
+          <div class="audit-change">${entry.previous_qty} ${arrow} ${entry.new_qty}</div>
+          <div class="audit-reason">${entry.reason}</div>
+          <div class="audit-time">${time}</div>
+        </div>
+      `;
+    }).join('');
   }
 
   function setStatus(text, type) {
@@ -390,6 +593,149 @@
 
   function updateLastSynced() {
     document.getElementById('lastSynced').textContent = new Date().toLocaleTimeString();
+  }
+
+  // ── Tabs ───────────────────────────────────────────────────────
+  function switchTab(tab) {
+    // Hide all tabs
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+    // Show selected tab
+    document.getElementById(tab).classList.add('active');
+    event.target.classList.add('active');
+
+    // Load shipping data if switching to shipping
+    if (tab === 'shipping') {
+      loadOrders();
+    }
+  }
+
+  // ── Shipping ───────────────────────────────────────────────────
+  let orders = [];
+
+  async function loadOrders() {
+    setStatusShipping('Loading orders...', 'syncing');
+    try {
+      const { data, error } = await supabase
+        .from('orders')
+        .select('*')
+        .neq('status', 'shipped')
+        .order('created_at', { ascending: true });
+
+      if (error) throw error;
+
+      orders = data || [];
+      renderOrders();
+      subscribeToOrderChanges();
+      setStatusShipping(orders.length + ' pending order' + (orders.length !== 1 ? 's' : ''), 'synced');
+    } catch (err) {
+      console.error('Failed to load orders:', err);
+      setStatusShipping('Failed to load orders: ' + err.message, 'error');
+    }
+  }
+
+  function renderOrders() {
+    const grid = document.getElementById('ordersGrid');
+    grid.innerHTML = '';
+
+    if (orders.length === 0) {
+      grid.innerHTML = '<div class="no-orders">No pending orders</div>';
+      return;
+    }
+
+    orders.forEach(order => {
+      const card = document.createElement('div');
+      card.className = 'order-card';
+
+      // Format address
+      const addr = order.shipping_address || {};
+      const addressText = [
+        addr.line1,
+        addr.line2,
+        `${addr.city}, ${addr.state} ${addr.postal_code}`,
+        addr.country
+      ].filter(Boolean).join('\n');
+
+      // Format items
+      const items = (order.items || []).map(item =>
+        `${item.qty}x ${item.name || item.sku}`
+      ).join(', ');
+
+      // Calculate weight (cd: 0.5 oz, shirt: 0.3 oz)
+      let weight = 0;
+      (order.items || []).forEach(item => {
+        if (item.sku.includes('cd')) weight += 0.5 * item.qty;
+        else if (item.sku.includes('shirt')) weight += 0.3 * item.qty;
+      });
+
+      // Format all order info for copying
+      const fullOrderInfo = `${order.customer_name}
+${addressText}
+
+Items: ${items}
+Weight: ${weight.toFixed(1)} oz`;
+
+      card.innerHTML = `
+        <div class="order-header">
+          <div>
+            <div class="order-number">${order.order_number || 'N/A'}</div>
+            <div class="order-customer">${order.customer_name || 'Unknown'}</div>
+          </div>
+          <div style="color: #666; font-size: 0.8rem;">${order.country || 'US'}</div>
+        </div>
+        <div class="order-address">${addressText.replace(/\n/g, '<br>')}</div>
+        <div class="order-items"><strong>Items:</strong> ${items}</div>
+        <div class="order-weight"><strong>Weight:</strong> ${weight.toFixed(1)} oz</div>
+        <div class="order-actions">
+          <button class="copy-address-btn" onclick="copyToClipboard('${encodeURIComponent(fullOrderInfo)}')">Copy All</button>
+          <button class="mark-shipped-btn" onclick="markAsShipped('${order.id}')">✓ Shipped</button>
+        </div>
+      `;
+      grid.appendChild(card);
+    });
+  }
+
+  function subscribeToOrderChanges() {
+    supabase.channel('orders_changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, payload => {
+        loadOrders();
+      })
+      .subscribe();
+  }
+
+  async function markAsShipped(orderId) {
+    try {
+      const { error } = await supabase
+        .from('orders')
+        .update({ status: 'shipped', updated_at: new Date().toISOString() })
+        .eq('id', orderId);
+
+      if (error) throw error;
+
+      console.log('✓ Marked order as shipped:', orderId);
+      loadOrders();
+    } catch (err) {
+      console.error('Failed to mark order as shipped:', err);
+      alert('Error: ' + err.message);
+    }
+  }
+
+  function copyToClipboard(encoded) {
+    const text = decodeURIComponent(encoded);
+    navigator.clipboard.writeText(text).then(() => {
+      alert('Address copied!');
+    }).catch(() => {
+      alert('Failed to copy');
+    });
+  }
+
+  function setStatusShipping(text, type) {
+    const el = document.getElementById('statusShipping');
+    if (el) {
+      el.textContent = text;
+      el.className = 'status ' + (type || '');
+    }
   }
 
   // ── Event listeners ───────────────────────────────────────────
