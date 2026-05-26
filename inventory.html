@@ -155,14 +155,6 @@
       font-size: 0.85rem;
       margin-top: 8px;
     }
-    .order-tracking {
-      color: #5dd95d;
-      font-size: 0.85rem;
-      margin-top: 8px;
-      padding: 8px;
-      background: #0f2a0f;
-      border-left: 2px solid #2a7a2a;
-    }
     .order-actions {
       display: flex;
       gap: 8px;
@@ -471,6 +463,15 @@
         }
       })
       .subscribe();
+
+    // Subscribe to audit_log changes (from webhook or manual adjustments)
+    supabase.channel('audit_log_changes')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'audit_log' }, payload => {
+        console.log('New audit entry:', payload.new);
+        loadAuditLog();
+        updateLastSynced();
+      })
+      .subscribe();
   }
 
   const PRODUCTS = [
@@ -759,19 +760,18 @@ Weight: ${weight.toFixed(1)} oz`;
             <div class="order-number">${order.order_number || 'N/A'}</div>
             <div class="order-customer">${order.customer_name || 'Unknown'}</div>
           </div>
-          <div style="color: #666; font-size: 0.8rem;">${order.country || 'US'} ${isShipped ? '• Shipped' : ''}</div>
+          <div style="color: #666; font-size: 0.8rem;">${order.country || 'US'} ${isShipped ? '• ✓ Shipped' : '• Pending'}</div>
         </div>
         <div class="order-address">${addressText.replace(/\n/g, '<br>')}</div>
         <div class="order-items"><strong>Items:</strong> ${items}</div>
         <div class="order-weight"><strong>Weight:</strong> ${weight.toFixed(1)} oz</div>
-        ${order.tracking_number ? `<div class="order-tracking"><strong>Tracking:</strong> <code style="background: #111; padding: 4px 8px; border-radius: 3px;">${order.tracking_number}</code></div>` : ''}
-        <div class="order-actions" ${isShipped ? 'style="opacity: 0.5;"' : ''}>
-          <button class="copy-address-btn" onclick="copyToClipboard('${encodeURIComponent(fullOrderInfo)}')" ${isShipped ? 'disabled' : ''}>Copy All</button>
+        <div class="order-actions">
           ${!isShipped ? `
-            <input type="text" id="tracking_${order.id}" placeholder="Pirateship tracking #" style="flex: 1; background: #111; border: 1px solid #333; color: #f0f0f0; padding: 8px; font-family: 'Courier New', monospace; font-size: 0.9rem;">
-            <button class="mark-shipped-btn" onclick="markAsShipped('${order.id}', document.getElementById('tracking_${order.id}').value)">✓ Shipped</button>
+            <button class="copy-address-btn" onclick="copyToClipboard('${encodeURIComponent(fullOrderInfo)}')">Copy All</button>
+            <button class="mark-shipped-btn" onclick="markAsShipped('${order.id}')">✓ Mark Shipped</button>
           ` : `
-            <button class="mark-shipped-btn" disabled style="opacity: 0.6; cursor: default;">Shipped ✓</button>
+            <button class="copy-address-btn" disabled style="opacity: 0.5; cursor: default;">Copy All</button>
+            <button class="mark-shipped-btn" disabled style="opacity: 0.5; cursor: default;">✓ Shipped</button>
           `}
         </div>
       `;
@@ -787,26 +787,20 @@ Weight: ${weight.toFixed(1)} oz`;
       .subscribe();
   }
 
-  async function markAsShipped(orderId, trackingNumber = null) {
+  async function markAsShipped(orderId) {
     try {
-      const updateData = {
-        status: 'shipped',
-        updated_at: new Date().toISOString()
-      };
-
-      if (trackingNumber && trackingNumber.trim()) {
-        updateData.tracking_number = trackingNumber.trim();
-      }
-
       const { error } = await supabase
         .from('orders')
-        .update(updateData)
+        .update({
+          status: 'shipped',
+          updated_at: new Date().toISOString()
+        })
         .eq('id', orderId);
 
       if (error) throw error;
 
-      console.log('✓ Marked order as shipped:', orderId, trackingNumber ? `(Tracking: ${trackingNumber})` : '');
-      setStatusShipping('✓ Order marked as shipped' + (trackingNumber ? ' with tracking' : ''), 'synced');
+      console.log('✓ Marked order as shipped:', orderId);
+      setStatusShipping('✓ Order marked as shipped', 'synced');
       setTimeout(() => loadOrders(), 500);
     } catch (err) {
       console.error('Failed to mark order as shipped:', err);
