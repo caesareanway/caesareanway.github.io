@@ -166,23 +166,6 @@
       border-color: var(--fg);
     }
 
-    .express-checkout-section { display: none; flex-direction: column; gap: 0; }
-    .express-checkout-section.visible { display: flex; }
-
-    .express-or {
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--fg-dim);
-      text-align: center;
-      padding: 10px 0;
-      opacity: 0.5;
-    }
-
-    #pr-btn-cd,
-    #pr-btn-head { min-height: 48px; }
-
     /* ── Cart button in nav ── */
     .nav-cart {
       display: flex;
@@ -612,10 +595,6 @@
           </select>
           <div class="product-actions" style="margin-top: auto;">
             <button class="btn-add-cart" id="add-eagle" onclick="addToCart('eagle')">Add to Cart</button>
-            <div class="express-checkout-section" id="express-eagle">
-              <div class="express-or">— or —</div>
-              <div id="pr-btn-eagle"></div>
-            </div>
           </div>
         </div>
       </div>
@@ -650,10 +629,6 @@
           </select>
           <div class="product-actions" style="margin-top: auto;">
             <button class="btn-add-cart" id="add-head" onclick="addToCart('head')">Add to Cart</button>
-            <div class="express-checkout-section" id="express-head">
-              <div class="express-or">— or —</div>
-              <div id="pr-btn-head"></div>
-            </div>
           </div>
         </div>
       </div>
@@ -673,10 +648,6 @@
           <p class="product-row-desc">Debut EP. Six tracks of gore-soaked<br>death metal. Horror Pain Gore Death<br>Productions, 2025.</p>
           <div class="product-actions" style="margin-top: auto;">
             <button class="btn-add-cart" id="add-cd" onclick="addToCart('cd')">Add to Cart</button>
-            <div class="express-checkout-section" id="express-cd">
-              <div class="express-or">— or —</div>
-              <div id="pr-btn-cd"></div>
-            </div>
           </div>
         </div>
       </div>
@@ -1032,171 +1003,7 @@
 
   // ── Size change → reveal Apple Pay for shirts ──────────────
   function onSizeChange(shirtId) {
-    const size = document.getElementById(shirtId + '-size').value;
-    const expressEl = document.getElementById('express-' + shirtId);
-    const readyKey = shirtId + 'PaymentRequestReady';
-    if (size && stripeReady && window[readyKey]) {
-      expressEl.classList.add('visible');
-    } else {
-      expressEl.classList.remove('visible');
-    }
     updateStockDisplay();
-  }
-
-  // ── Stripe Payment Request (Apple Pay / Google Pay) ───────
-  let stripeReady = false;
-  let headPaymentRequestReady = false;
-  let eaglePaymentRequestReady = false;
-
-  async function initStripe() {
-    if (STRIPE_PK.includes('REPLACE')) return; // No key yet — skip
-
-    let stripe;
-    try { stripe = Stripe(STRIPE_PK); }
-    catch (e) { return; }
-
-    // Helper: handle Apple Pay / Google Pay confirmation
-    async function handlePaymentMethod(ev, { amount, description, shippingAddress }) {
-      try {
-        const res = await fetch('/.netlify/functions/create-payment-intent', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ amount, description, shippingAddress }),
-        });
-        const { clientSecret, error: backendError } = await res.json();
-        if (backendError) { ev.complete('fail'); return; }
-
-        const { error } = await stripe.confirmCardPayment(
-          clientSecret,
-          { payment_method: ev.paymentMethod.id },
-          { handleActions: false }
-        );
-
-        if (error) { ev.complete('fail'); }
-        else       { ev.complete('success'); window.location.href = '/success.html'; }
-      } catch (_) {
-        ev.complete('fail');
-      }
-    }
-
-    const shippingOptions = [{
-      id: 'us-standard',
-      label: 'US Standard Shipping (5–7 days)',
-      amount: 500,
-    }];
-
-    // ── CD — $10 product + $5 shipping = $15 total ──────────
-    const prCD = stripe.paymentRequest({
-      country: 'US', currency: 'usd',
-      total: { label: 'Caesarean — Wretched Decrepitude EP (CD)', amount: 1500 },
-      requestShipping: true,
-      shippingOptions,
-    });
-
-    prCD.on('shippingaddresschange', ev => {
-      ev.updateWith({
-        status: ev.shippingAddress.country === 'US' ? 'success' : 'invalid_shipping_address',
-        shippingOptions,
-      });
-    });
-
-    prCD.on('paymentmethod', ev => handlePaymentMethod(ev, {
-      amount: 1500,
-      description: 'Caesarean - Wretched Decrepitude EP (CD)',
-      shippingAddress: ev.shippingAddress,
-    }));
-
-    const cdElements = stripe.elements();
-    const prBtnCD = cdElements.create('paymentRequestButton', {
-      paymentRequest: prCD,
-      style: { paymentRequestButton: { theme: 'light', height: '48px', type: 'buy' } },
-    });
-
-    const canCD = await prCD.canMakePayment();
-    if (canCD) {
-      prBtnCD.mount('#pr-btn-cd');
-      document.getElementById('express-cd').classList.add('visible');
-    }
-
-    // ── Head — $20 product + $5 shipping = $25 total ─────────
-    const prHead = stripe.paymentRequest({
-      country: 'US', currency: 'usd',
-      total: { label: 'Head', amount: 2500 },
-      requestShipping: true,
-      shippingOptions,
-    });
-
-    prHead.on('shippingaddresschange', ev => {
-      ev.updateWith({
-        status: ev.shippingAddress.country === 'US' ? 'success' : 'invalid_shipping_address',
-        shippingOptions,
-      });
-    });
-
-    prHead.on('paymentmethod', ev => {
-      const size = document.getElementById('head-size').value || '?';
-      handlePaymentMethod(ev, {
-        amount: 2500,
-        description: `Head (${size})`,
-        shippingAddress: ev.shippingAddress,
-      });
-    });
-
-    const headElements = stripe.elements();
-    const prBtnHead = headElements.create('paymentRequestButton', {
-      paymentRequest: prHead,
-      style: { paymentRequestButton: { theme: 'light', height: '48px', type: 'buy' } },
-    });
-
-    const canHead = await prHead.canMakePayment();
-    if (canHead) {
-      prBtnHead.mount('#pr-btn-head');
-      headPaymentRequestReady = true;
-      if (document.getElementById('head-size').value) {
-        document.getElementById('express-head').classList.add('visible');
-      }
-    }
-
-    // ── Eagle — $20 product + $5 shipping = $25 total ────────
-    const prEagle = stripe.paymentRequest({
-      country: 'US', currency: 'usd',
-      total: { label: 'Eagle', amount: 2500 },
-      requestShipping: true,
-      shippingOptions,
-    });
-
-    prEagle.on('shippingaddresschange', ev => {
-      ev.updateWith({
-        status: ev.shippingAddress.country === 'US' ? 'success' : 'invalid_shipping_address',
-        shippingOptions,
-      });
-    });
-
-    prEagle.on('paymentmethod', ev => {
-      const size = document.getElementById('eagle-size').value || '?';
-      handlePaymentMethod(ev, {
-        amount: 2500,
-        description: `Eagle (${size})`,
-        shippingAddress: ev.shippingAddress,
-      });
-    });
-
-    const eagleElements = stripe.elements();
-    const prBtnEagle = eagleElements.create('paymentRequestButton', {
-      paymentRequest: prEagle,
-      style: { paymentRequestButton: { theme: 'light', height: '48px', type: 'buy' } },
-    });
-
-    const canEagle = await prEagle.canMakePayment();
-    if (canEagle) {
-      prBtnEagle.mount('#pr-btn-eagle');
-      eaglePaymentRequestReady = true;
-      if (document.getElementById('eagle-size').value) {
-        document.getElementById('express-eagle').classList.add('visible');
-      }
-    }
-
-    stripeReady = true;
   }
 
   // ── Nav scroll behavior (mobile) ─────────────────────────
