@@ -316,6 +316,16 @@
         <div class="audit-log-title">Recent Changes</div>
         <div id="auditLog"></div>
       </div>
+
+      <div class="manual-log-section" style="margin-top: 32px; padding-top: 20px; border-top: 1px solid #1c1c1c;">
+        <div class="audit-log-title">Log Manual Adjustment</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+          <input type="text" id="logProduct" placeholder="SKU (e.g., cd)" style="background: #111; border: 1px solid #333; color: #f0f0f0; padding: 8px; font-family: 'Inter', sans-serif; font-size: 0.9rem;">
+          <input type="number" id="logQty" placeholder="New quantity" style="background: #111; border: 1px solid #333; color: #f0f0f0; padding: 8px; font-family: 'Inter', sans-serif; font-size: 0.9rem;">
+          <input type="text" id="logReason" placeholder="Reason (e.g., Sold at show)" style="background: #111; border: 1px solid #333; color: #f0f0f0; padding: 8px; font-family: 'Inter', sans-serif; font-size: 0.9rem; grid-column: 1 / -1;">
+        </div>
+        <button onclick="submitManualLog()" style="width: 100%; background: #c00000; border: none; color: #f0f0f0; padding: 10px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif;">Log Adjustment</button>
+      </div>
     </div>
 
     <!-- Shipping Tab -->
@@ -593,6 +603,64 @@
 
   function updateLastSynced() {
     document.getElementById('lastSynced').textContent = new Date().toLocaleTimeString();
+  }
+
+  async function submitManualLog() {
+    const product = document.getElementById('logProduct').value.trim();
+    const newQty = parseInt(document.getElementById('logQty').value);
+    const reason = document.getElementById('logReason').value.trim();
+
+    if (!product || isNaN(newQty) || !reason) {
+      alert('Please fill in all fields');
+      return;
+    }
+
+    try {
+      // Get current inventory
+      const { data: current, error: fetchErr } = await supabase
+        .from('inventory')
+        .select('quantity')
+        .eq('product', product)
+        .single();
+
+      if (fetchErr) throw new Error(`Product not found: ${product}`);
+      if (!current) throw new Error(`No record for ${product}`);
+
+      const oldQty = current.quantity;
+
+      // Update inventory
+      const { error: updateErr } = await supabase
+        .from('inventory')
+        .update({ quantity: newQty, updated_at: new Date().toISOString() })
+        .eq('product', product);
+
+      if (updateErr) throw updateErr;
+
+      // Log to audit_log
+      const { error: logErr } = await supabase
+        .from('audit_log')
+        .insert([{
+          product,
+          previous_qty: oldQty,
+          new_qty: newQty,
+          reason: reason,
+          timestamp: new Date().toISOString()
+        }]);
+
+      if (logErr) throw logErr;
+
+      // Refresh UI
+      await loadInventory();
+      await loadAuditLog();
+
+      // Clear form
+      document.getElementById('logProduct').value = '';
+      document.getElementById('logQty').value = '';
+      document.getElementById('logReason').value = '';
+      setStatus('✓ Adjustment logged', 'synced');
+    } catch (err) {
+      setStatus('✗ Error: ' + err.message, 'error');
+    }
   }
 
   // ── Tabs ───────────────────────────────────────────────────────
