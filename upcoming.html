@@ -40,7 +40,7 @@
       <div class="show-item" data-show-date="2026-06-07">
         <div class="show-date-col">
           <div class="show-date">Jun 7</div>
-          <div class="show-day">Saturday &mdash; 2026</div>
+          <div class="show-day">Sunday &mdash; 2026</div>
           <div class="show-countdown"></div>
         </div>
         <div class="show-details">
@@ -177,7 +177,7 @@
       const dateStr = item.getAttribute('data-show-date');
       const showDate = new Date(dateStr + 'T23:59:59').getTime();
       const now = Date.now();
-      const daysUntil = Math.ceil((showDate - now) / (1000 * 60 * 60 * 24));
+      const daysUntil = Math.floor((showDate - now) / (1000 * 60 * 60 * 24));
 
       const countdown = item.querySelector('.show-countdown');
       if (daysUntil > 0) {
