@@ -2,6 +2,10 @@
   publish   = "."
   functions = "netlify/functions"
 
+# Keeps Supabase free-tier from auto-pausing (threshold is 7 days inactivity)
+[functions."keep-alive"]
+  schedule = "0 12 */6 * *"
+
 [build.environment]
   NODE_VERSION = "18"
 

@@ -48,6 +48,7 @@
 
       btn.disabled = true;
       const originalText = btn.textContent;
+      btn.textContent = '…';
 
       try {
         const res = await fetch('/.netlify/functions/signup-email', {
