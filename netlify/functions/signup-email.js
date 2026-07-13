@@ -42,25 +42,10 @@ exports.handler = async (event) => {
 
     const normalizedEmail = email.toLowerCase();
 
-    // Check if already subscribed (ignore errors — just proceed to upsert)
-    const { data: existing } = await supabase
-      .from('email_signups')
-      .select('id')
-      .eq('email', normalizedEmail)
-      .maybeSingle();
-
-    if (existing) {
-      return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify({ success: true, message: 'Already subscribed' })
-      };
-    }
-
-    // Insert new signup
+    // Upsert — silently handles duplicate emails (SELECT is blocked for anon by RLS)
     const { error } = await supabase
       .from('email_signups')
-      .insert({ email: normalizedEmail, source: source || 'music_page' });
+      .upsert({ email: normalizedEmail, source: source || 'music_page' }, { onConflict: 'email', ignoreDuplicates: true });
 
     if (error) {
       console.error('Supabase insert error:', JSON.stringify(error));
